@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Horizon — Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="admin-body">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <svg class="logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path
+                        d="M14 0L17.5 7L25.5 3.5L20 10.5L28 14L20 17.5L25.5 24.5L17.5 21L14 28L10.5 21L2.5 24.5L8 17.5L0 14L8 10.5L2.5 3.5L10.5 7L14 0Z"
+                        fill="#00e5ff" />
+                </svg>
+                <span>AI<span class="logo-accent">ADMIN</span></span>
+            </div>
+            <nav class="admin-nav">
+                <button class="admin-tab active" data-tab="courses-tab">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Courses
+                </button>
+                <button class="admin-tab" data-tab="articles-tab">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    Articles
+                </button>
+                <button class="admin-tab" data-tab="reviews-tab">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                        </polygon>
+                    </svg>
+                    Reviews
+                </button>
+            </nav>
+            <div class="admin-footer-nav">
+                <a href="index.html" class="btn-back">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Site
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1 id="admin-page-title">Manage Courses</h1>
+                <div class="admin-stats">
+                    <span class="stat-badge" id="stat-courses">0 Courses</span>
+                    <span class="stat-badge" id="stat-articles">0 Articles</span>
+                    <span class="stat-badge" id="stat-reviews">0 Reviews</span>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Courses Tab -->
+                <section id="courses-tab" class="admin-panel active">
+                    <div class="admin-form-glass">
+                        <h2>Add New Course</h2>
+                        <form id="course-form" class="admin-form">
+                            <input type="hidden" id="course-id">
+                            <div class="form-group">
+                                <label for="course-yt-url">YouTube URL <span class="required">*</span></label>
+                                <input type="url" id="course-yt-url" placeholder="https://www.youtube.com/watch?v=..."
+                                    required>
+                                <small class="form-hint">Thumbnail and Video ID will be auto-extracted.</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="course-title">Course Title <span class="required">*</span></label>
+                                    <input type="text" id="course-title" placeholder="e.g. Advanced Prompt Engineering"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="course-lessons">Lessons Count</label>
+                                    <input type="text" id="course-lessons" placeholder="e.g. 10 Lessons" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="course-rating">Rating (1.0 - 5.0)</label>
+                                    <input type="number" step="0.1" min="1" max="5" id="course-rating" value="4.5"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="course-desc">Description <span class="required">*</span></label>
+                                <textarea id="course-desc" placeholder="Short course description..." rows="3"
+                                    required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="course-cancel"
+                                    style="display: none;">Cancel Edit</button>
+                                <button type="submit" class="btn-primary" id="course-submit">Add Course</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="admin-list-container">
+                        <h3>Existing Courses</h3>
+                        <div class="admin-grid" id="courses-list">
+                            <!-- Items populated by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Articles Tab -->
+                <section id="articles-tab" class="admin-panel">
+                    <div class="admin-form-glass">
+                        <h2>Add New Article</h2>
+                        <form id="article-form" class="admin-form">
+                            <input type="hidden" id="article-id">
+                            <div class="form-group">
+                                <label for="article-title">Article Title <span class="required">*</span></label>
+                                <input type="text" id="article-title" placeholder="e.g. The Future of AGI" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="article-tag">Category / Tag <span class="required">*</span></label>
+                                    <input type="text" id="article-tag" placeholder="e.g. Setup, AI Ethics" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="article-image">Image URL</label>
+                                    <input type="url" id="article-image" placeholder="https://example.com/image.jpg"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="article-summary">Summary <span class="required">*</span></label>
+                                <textarea id="article-summary" placeholder="Short article summary..." rows="3"
+                                    required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="article-cancel"
+                                    style="display: none;">Cancel Edit</button>
+                                <button type="submit" class="btn-primary" id="article-submit">Add Article</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="admin-list-container">
+                        <h3>Existing Articles</h3>
+                        <div class="admin-grid" id="articles-list">
+                            <!-- Items populated by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reviews Tab -->
+                <section id="reviews-tab" class="admin-panel">
+                    <div class="admin-form-glass">
+                        <h2>Add New Tool Review</h2>
+                        <form id="review-form" class="admin-form">
+                            <input type="hidden" id="review-id">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="review-tool">Tool Name <span class="required">*</span></label>
+                                    <input type="text" id="review-tool" placeholder="e.g. Claude 3" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-rating">Rating (1.0 - 5.0)</label>
+                                    <input type="number" step="0.1" min="1" max="5" id="review-rating" value="4.8"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="review-color">Icon Background Color (HEX)</label>
+                                    <input type="color" id="review-color" value="#00e5ff">
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-link">Website Link</label>
+                                    <input type="url" id="review-link" placeholder="https://..." required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-desc">Description <span class="required">*</span></label>
+                                <textarea id="review-desc" placeholder="Short description of the tool..." rows="2"
+                                    required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="review-cancel"
+                                    style="display: none;">Cancel Edit</button>
+                                <button type="submit" class="btn-primary" id="review-submit">Add Review</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="admin-list-container">
+                        <h3>Existing Reviews</h3>
+                        <div class="admin-grid" id="reviews-list">
+                            <!-- Items populated by JS -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>
