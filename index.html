@@ -32,11 +32,14 @@
                 <a href="#news">News</a>
                 <a href="#reviews">Tools</a>
                 <a href="#newsletter">Community FAQ</a>
-                <a href="admin.html" class="nav-admin" style="color: var(--accent); font-weight: 600;">Admin</a>
+                <a href="admin.html" id="navAdminLink" class="nav-admin"
+                    style="color: var(--accent); font-weight: 600; display: none;">Admin</a>
             </div>
             <div class="nav-actions">
-                <a href="#" class="btn-login">Login</a>
-                <a href="#" class="btn-signup">Sign Up</a>
+                <a href="#" class="btn-login" id="navLoginBtn">Login</a>
+                <a href="#" class="btn-signup" id="navSignupBtn">Sign Up</a>
+                <button id="navLogoutBtn" class="btn-login"
+                    style="display: none; border-color: #ef4444; color: #ef4444;">Logout</button>
             </div>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
@@ -50,8 +53,13 @@
         <a href="#news">News</a>
         <a href="#reviews">Tools</a>
         <a href="#newsletter">Community FAQ</a>
-        <a href="#" class="mobile-cta">Login</a>
-        <a href="#" class="mobile-cta" style="background: var(--accent); color: var(--bg-primary);">Sign Up</a>
+        <a href="admin.html" id="mobileAdminLink"
+            style="color: var(--accent); font-weight: 600; display: none;">Admin</a>
+        <a href="#" class="mobile-cta" id="mobileLoginBtn">Login</a>
+        <a href="#" class="mobile-cta" id="mobileSignupBtn"
+            style="background: var(--accent); color: var(--bg-primary);">Sign Up</a>
+        <a href="#" class="mobile-cta" id="mobileLogoutBtn"
+            style="display: none; border-color: #ef4444; color: #ef4444;">Logout</a>
     </div>
 
     <!-- ======= HERO ======= -->

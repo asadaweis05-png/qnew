@@ -46,6 +46,20 @@ async function fetchData(table, stateKey) {
     adminData[stateKey] = data || [];
 }
 
+// --- LOGOUT LOGIC ---
+const logoutBtn = document.getElementById('adminLogoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error logging out:', error);
+            showToast('Failed to log out', 'error');
+        }
+    });
+}
+
 // --- TAB NAVIGATION ---
 
 function initTabs() {

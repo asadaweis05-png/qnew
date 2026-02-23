@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCardInteractions();
     initToastSystem();
     loadAdminData();
+    initSupabaseAuth();
 });
 
 // ===== SCROLL REVEAL (Intersection Observer) =====
@@ -576,35 +577,143 @@ function initModals() {
     });
 
     // Form submissions
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('.btn-modal-submit');
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
         btn.textContent = 'Logging in...';
         btn.disabled = true;
 
-        setTimeout(() => {
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) throw error;
+
             closeAllModals();
             showToast('✓ Logged in successfully! Welcome back.', 'success');
+            e.target.reset();
+        } catch (error) {
+            console.error(error);
+            showToast(error.message || 'Error logging in', 'error');
+        } finally {
             btn.textContent = 'Login';
             btn.disabled = false;
-            e.target.reset();
-        }, 1200);
+        }
     });
 
-    document.getElementById('signupForm').addEventListener('submit', (e) => {
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('.btn-modal-submit');
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+
         btn.textContent = 'Creating account...';
         btn.disabled = true;
 
-        setTimeout(() => {
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: name
+                    }
+                }
+            });
+
+            if (error) throw error;
+
             closeAllModals();
-            showToast('✓ Account created! Welcome to AI Horizon.', 'success');
+            showToast('✓ Account created! You are now logged in.', 'success');
+            e.target.reset();
+        } catch (error) {
+            console.error(error);
+            showToast(error.message || 'Error signing up', 'error');
+        } finally {
             btn.textContent = 'Create Account';
             btn.disabled = false;
-            e.target.reset();
-        }, 1200);
+        }
     });
+}
+
+// ===== SUPABASE AUTH LISTENER =====
+function initSupabaseAuth() {
+    const adminEmail = 'asadaweis05@gmail.com';
+
+    const navAdminLink = document.getElementById('navAdminLink');
+    const mobileAdminLink = document.getElementById('mobileAdminLink');
+
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    const navSignupBtn = document.getElementById('navSignupBtn');
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+    const toggleAuthUI = (user) => {
+        if (user) {
+            // Logged in
+            if (navLoginBtn) navLoginBtn.style.display = 'none';
+            if (navSignupBtn) navSignupBtn.style.display = 'none';
+            if (navLogoutBtn) navLogoutBtn.style.display = 'inline-flex';
+
+            if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+            if (mobileSignupBtn) mobileSignupBtn.style.display = 'none';
+            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+
+            // Check admin
+            if (user.email === adminEmail) {
+                if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                if (mobileAdminLink) mobileAdminLink.style.display = 'block';
+            } else {
+                if (navAdminLink) navAdminLink.style.display = 'none';
+                if (mobileAdminLink) mobileAdminLink.style.display = 'none';
+            }
+        } else {
+            // Logged out
+            if (navLoginBtn) navLoginBtn.style.display = 'inline-flex';
+            if (navSignupBtn) navSignupBtn.style.display = 'inline-flex';
+            if (navLogoutBtn) navLogoutBtn.style.display = 'none';
+
+            if (mobileLoginBtn) mobileLoginBtn.style.display = 'block';
+            if (mobileSignupBtn) mobileSignupBtn.style.display = 'block';
+            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+
+            if (navAdminLink) navAdminLink.style.display = 'none';
+            if (mobileAdminLink) mobileAdminLink.style.display = 'none';
+        }
+    };
+
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        toggleAuthUI(session?.user);
+    });
+
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange((event, session) => {
+        toggleAuthUI(session?.user);
+    });
+
+    // Wire up logouts
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await supabase.auth.signOut();
+            showToast('Logged out successfully', 'info');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
+    if (navLogoutBtn) navLogoutBtn.addEventListener('click', handleLogout);
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', handleLogout);
 }
 
 function openModal(id) {
