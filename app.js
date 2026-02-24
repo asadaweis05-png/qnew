@@ -587,7 +587,7 @@ function initModals() {
         btn.disabled = true;
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
@@ -617,7 +617,7 @@ function initModals() {
         btn.disabled = true;
 
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
                 options: {
@@ -692,12 +692,12 @@ function initSupabaseAuth() {
     };
 
     // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
         toggleAuthUI(session?.user);
     });
 
     // Listen for auth changes
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
         toggleAuthUI(session?.user);
     });
 
@@ -705,7 +705,7 @@ function initSupabaseAuth() {
     const handleLogout = async (e) => {
         e.preventDefault();
         try {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             showToast('Logged out successfully', 'info');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -845,7 +845,7 @@ function showToast(message, type = 'info') {
 async function loadAdminData() {
     try {
         // 1. Courses
-        const { data: courses, error: errCourses } = await supabase.from('courses').select('*').order('created_at', { ascending: false });
+        const { data: courses, error: errCourses } = await supabaseClient.from('courses').select('*').order('created_at', { ascending: false });
         if (errCourses) throw errCourses;
         const coursesGrid = document.querySelector('.courses-grid');
         if (coursesGrid && courses && courses.length > 0) {
@@ -878,7 +878,7 @@ async function loadAdminData() {
         }
 
         // 2. Articles
-        const { data: articles, error: errArticles } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
+        const { data: articles, error: errArticles } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
         if (errArticles) throw errArticles;
         const newsSidebar = document.querySelector('.news-sidebar');
         if (newsSidebar && articles && articles.length > 0) {
@@ -899,7 +899,7 @@ async function loadAdminData() {
         }
 
         // 3. Reviews
-        const { data: reviews, error: errReviews } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
+        const { data: reviews, error: errReviews } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
         if (errReviews) throw errReviews;
         const reviewsGrid = document.querySelector('.reviews-grid');
         if (reviewsGrid && reviews && reviews.length > 0) {

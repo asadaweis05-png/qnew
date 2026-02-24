@@ -51,7 +51,7 @@ const logoutBtn = document.getElementById('adminLogoutBtn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         try {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         } catch (error) {
             console.error('Error logging out:', error);
@@ -298,11 +298,11 @@ function initForms() {
 
 async function saveItem(tableName, stateKey, data, isEditId) {
     if (isEditId) {
-        const { error } = await supabase.from(tableName).update(data).eq('id', isEditId);
+        const { error } = await supabaseClient.from(tableName).update(data).eq('id', isEditId);
         if (error) throw error;
         showToast('Item updated successfully', 'success');
     } else {
-        const { error } = await supabase.from(tableName).insert([data]);
+        const { error } = await supabaseClient.from(tableName).insert([data]);
         if (error) throw error;
         showToast('Item added successfully', 'success');
     }
@@ -315,7 +315,7 @@ async function saveItem(tableName, stateKey, data, isEditId) {
 window.deleteItem = async function (tableName, stateKey, id) {
     if (confirm('Are you sure you want to delete this item?')) {
         try {
-            const { error } = await supabase.from(tableName).delete().eq('id', id);
+            const { error } = await supabaseClient.from(tableName).delete().eq('id', id);
             if (error) throw error;
 
             await fetchData(tableName, stateKey);

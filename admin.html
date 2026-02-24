@@ -20,7 +20,7 @@
         // Immediately Check Auth Status
         (async function checkAuth() {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
 
                 if (error || !session || !session.user) {
                     window.location.href = 'index.html';
