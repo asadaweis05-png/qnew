@@ -17,11 +17,11 @@
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
-    --accent: #00e5ff;
-    --accent-dim: #00e5ff88;
-    --accent-glow: #00e5ff33;
-    --gradient-start: #00e5ff;
-    --gradient-end: #0070f3;
+    --accent: #2563eb;
+    --accent-dim: #2563eb88;
+    --accent-glow: #2563eb33;
+    --gradient-start: #3b82f6;
+    --gradient-end: #1d4ed8;
     --success: #10b981;
     --warning: #f59e0b;
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
