@@ -1,4 +1,4 @@
-// ===== AI HORIZON — Enhanced JavaScript =====
+// ===== theqnew — Enhanced JavaScript =====
 
 document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
@@ -468,7 +468,7 @@ function initModals() {
         <div class="modal-content">
             <button class="modal-close" aria-label="Close">&times;</button>
             <h2 class="modal-title">Welcome Back</h2>
-            <p class="modal-subtitle">Log in to your AI Horizon account</p>
+            <p class="modal-subtitle">Log in to your theqnew account</p>
             <form class="modal-form" id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
@@ -493,7 +493,7 @@ function initModals() {
         <div class="modal-content">
             <button class="modal-close" aria-label="Close">&times;</button>
             <h2 class="modal-title">Create Account</h2>
-            <p class="modal-subtitle">Join AI Horizon and start learning</p>
+            <p class="modal-subtitle">Join theqnew and start learning</p>
             <form class="modal-form" id="signupForm">
                 <div class="form-group">
                     <label for="signupName">Full Name</label>
