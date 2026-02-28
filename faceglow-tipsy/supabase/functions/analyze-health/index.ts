@@ -96,7 +96,7 @@ serve(async (req) => {
       }))
     };
 
-    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY') || 'AIzaSyAUX8wdueGfw9xIZiWG_-T5YLXrx0503bk';
     if (!GOOGLE_API_KEY) {
       console.error('GOOGLE_API_KEY is not configured');
       return new Response(JSON.stringify({ error: 'Google AI API key is not configured. Please add it to Supabase secrets.' }), {

@@ -1,0 +1,12 @@
+const fs = require('fs');
+const path = 'faceglow/assets/index-CGlQ7hi9.js';
+const stats = fs.statSync(path);
+console.log('Size:', stats.size);
+const first = Buffer.alloc(200);
+const last = Buffer.alloc(200);
+const fd = fs.openSync(path, 'r');
+fs.readSync(fd, first, 0, 200, 0);
+fs.readSync(fd, last, 0, 200, stats.size - 200);
+fs.closeSync(fd);
+console.log('FRST:', first.toString());
+console.log('LAST:', last.toString());
