@@ -206,7 +206,26 @@ function closeAllModals() {
 
 // ===== CARD INTERACTIONS =====
 function initCardInteractions() {
-    // Other interactions can go here
+    // Attach to static course cards in index.html
+    document.querySelectorAll('.course-card').forEach(card => {
+        // If it's a static card (doesn't have onclick yet), attach listener
+        if (!card.hasAttribute('onclick')) {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.course-title')?.textContent || 'AI Course';
+                // For static cards, we can show waitlist with just the title
+                openWaitlistModal(null, title);
+            });
+        }
+    });
+
+    // Handle news item clicks
+    document.querySelectorAll('.news-item, .news-featured').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            showToast('Full article coming soon!', 'info');
+        });
+    });
 }
 
 // ===== TOAST SYSTEM =====
@@ -316,16 +335,23 @@ async function loadAdminData() {
 }
 
 // ===== WAITLIST LOGIC =====
-window.openWaitlistModal = function (courseId) {
+window.openWaitlistModal = function (courseId, fallbackTitle) {
     const course = allCourses.find(c => c.id === courseId);
-    if (!course) return;
 
     const modal = document.getElementById('courseWaitlistModal');
     const titleEl = document.getElementById('waitlistCourseTitle');
     const idInput = document.getElementById('waitlistCourseId');
 
-    titleEl.textContent = course.title;
-    idInput.value = courseId;
+    if (course) {
+        titleEl.textContent = course.title;
+        idInput.value = course.id;
+    } else if (fallbackTitle) {
+        titleEl.textContent = fallbackTitle;
+        idInput.value = 'static_course';
+    } else {
+        titleEl.textContent = 'Our AI Courses';
+        idInput.value = 'unknown';
+    }
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
