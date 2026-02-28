@@ -22,111 +22,24 @@ const analyzeImage = async (file: File) => {
     reader.readAsDataURL(file);
   });
   const imageBase64 = await base64Promise;
-  const base64Data = imageBase64.split(',')[1] || imageBase64;
-  const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-
-  if (!GOOGLE_API_KEY) {
-    console.error('API Key Missing');
-    throw new Error('Google API Key is not configured');
-  }
-
-  console.log('Analyzing face with Direct Gemini API from Frontend...');
-
-  const tryGemini = async (model: string, endpoint: string) => {
-    console.log(`Trying Gemini API with model: ${model}, endpoint: ${endpoint}...`);
-    const response = await fetch(`https://generativelanguage.googleapis.com/${endpoint}/models/${model}:generateContent?key=${GOOGLE_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            {
-              text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
-
-CRITICAL: You MUST analyze the actual image provided. Look at:
-- Visible shine/oiliness on forehead, nose, chin (T-zone)
-- Dry patches, flakiness, or rough texture
-- Pore size and visibility
-- Skin texture and tone
-- Any acne, blemishes, or spots
-- Under-eye area condition
-- Fine lines or wrinkles
-
-Respond with ONLY a JSON object (no markdown, no code blocks) with this exact structure:
-
-{
-  "skinHealth": {
-    "qoyaan": <number 0-100>,
-    "nadiifnimo": <number 0-100>,
-    "dhadhanka": <number 0-100>,
-    "acne": <number 0-100>,
-    "wrinkles": <number 0-100>,
-    "darkCircles": <number 0-100>
-  },
-  "skinType": { 
-    "type": "oily/dry/combination/normal", 
-    "confidence": 50-100,
-    "indicators": ["3-4 technical Somali skin indicators observed"],
-    "tZone": "oily/dry/normal Somali description",
-    "cheeks": "oily/dry/normal Somali description"
-  },
-  "talooyinka": ["6-8 specific Somali recommendations"],
-  "features": { 
-    "midabMaqaarka": "Somali color description", 
-    "daQiyaas": 25, 
-    "nooMaqaarka": "Somali skin type name" 
-  },
-  "detailedAnalysis": { 
-    "oilLevel": "Somali description",
-    "dryness": "Somali description",
-    "poreSize": "Somali description",
-    "overallCondition": "Comprehensive Somali summary of skin health" 
-  },
-  "concerns": ["3-4 specific Somali skin concerns if any"]
-}`
-            },
-            {
-              inline_data: {
-                mime_type: mimeType,
-                data: base64Data
-              }
-            }
-          ]
-        }]
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Gemini API Error Detail (${model} - ${endpoint}):`, errorText);
-      throw new Error(`API ${response.status}: ${errorText || response.statusText}`);
-    }
-
-    return response.json();
-  };
+  console.log('Analyzing face with Supabase Edge Function...');
 
   try {
-    let data;
-    try {
-      // Primary attempt: Stable v1 endpoint with gemini-1.5-flash-latest
-      data = await tryGemini('gemini-1.5-flash-latest', 'v1');
-    } catch (e1) {
-      console.log('Primary Gemini call failed, trying fallback...');
-      // Fallback attempt: v1beta endpoint with gemini-2.0-flash
-      data = await tryGemini('gemini-2.0-flash', 'v1beta');
+    const { data, error } = await supabase.functions.invoke('analyze-face', {
+      body: { imageBase64 }
+    });
+
+    if (error) {
+      console.error('Edge Function Error:', error);
+      throw new Error(error.message || 'Hawaalaha AI ma soo celin xog sax ah.');
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      console.error('Invalid AI Response Structure:', data);
-      throw new Error('Hawaalaha AI ma soo celin xog sax ah.');
+    if (data.error) {
+      throw new Error(data.error);
     }
 
-    const analysis = JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
+    const analysis = data;
 
     return {
       hydration: analysis.skinHealth?.qoyaan || 70,
