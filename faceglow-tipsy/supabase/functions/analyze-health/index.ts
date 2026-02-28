@@ -96,29 +96,26 @@ serve(async (req) => {
       }))
     };
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY is not configured');
-      return new Response(JSON.stringify({ error: 'API configuration error' }), {
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+    if (!GOOGLE_API_KEY) {
+      console.error('GOOGLE_API_KEY is not configured');
+      return new Response(JSON.stringify({ error: 'Google AI API key is not configured. Please add it to Supabase secrets.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Calling AI for health analysis...');
+    console.log('Calling Gemini AI for health analysis...');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'user',
-            content: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
+        contents: [{
+          parts: [{
+            text: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
 
 MUHIIM: Dhammaan jawaabaha waa inay ku qornaadaan AF-SOOMAALI KELIYA.
 
@@ -153,39 +150,24 @@ Ka jawaab JSON object keliya (markdown la'aan):
   "correlations": [
     "<isku xirnaansho la helay, tusaale: 'Cabidda biyaha badan waxay la xiriirtaa dheefshiid wanaagsan' - AF-SOOMAALI>"
   ]
-}
-
-Bixi 3-6 aragtiyo ku salaysan xogta jirta. Noqo mid gaar ah oo tixraac qaababka xogta dhabta ah. DHAMMAAN QORAALKU WAA INUU AHAADAA AF-SOOMAALI.`
-          }
-        ]
+}`
+          }]
+        }]
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }), {
-          status: 402,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      
-      return new Response(JSON.stringify({ error: 'Failed to analyze health data' }), {
-        status: 500,
+      console.error('Gemini API error:', response.status, errorText);
+
+      return new Response(JSON.stringify({ error: 'Failed to analyze health data with Gemini API' }), {
+        status: response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const aiResponse = await response.json();
-    const aiContent = aiResponse.choices?.[0]?.message?.content || '';
+    const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     console.log('AI analysis completed');
 
