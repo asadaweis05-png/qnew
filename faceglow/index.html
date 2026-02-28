@@ -7,39 +7,30 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27ZY177JZT"></script>
-  <!DOCTYPE html>
-  <html lang="en">
-
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="./favicon.png" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-27ZY177JZT"></script>
-    <script>
-    window.dataLayer = window.dataLa      || [];
-    function gtag() { dataLayer.push(arg      ts); }
-    gtag('js', ne      te());
-    gtag('config', 'G-27Z77JZT');
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-27ZY177JZT');
+  </script>
+  <title>theqnew — FaceGlow Tipsy</title>
+  <meta name="description" content="AI-powered health and skin analysis" />
+  <meta name="author" content="THEQNEW" />
+  <meta property="og:image" content="/faceglow/og-image.png" />
+  <!-- Datafast Analytics -->
+  <script defer data-website-id="dfid_ISj0ZnjqP2cZjVTNdCa8R" data-domain="caafimaadai.com"
+    src="https://datafa.st/js/script.js">
     </script>
-    <title>theqnew — FaceGlow Tipsy</title>
-    <meta name="description" content="AI-powered health and skin analysis" />
-    <meta name="author" content="THEQNEW" />
-    <meta property="og:image" content="/faceglow/og-image.png" />
-    <!-- Datafast Analytics -->
-    <script defer data-website-id="dfid_ISj0ZnjqP2cZjVTNdCa8R" data-domain="caafimaadai.com"
-      src="https://datafa.st/js/script.js">
-      </script>
-    <script type="module" crossorigin src="/faceglow/assets/index-IfmfSuHH.js"></script>
-    <link rel="stylesheet" crossorigin href="/faceglow/assets/index-D5UIL9c0.css">
-  </head>
+  <script type="module" crossorigin src="/faceglow/assets/index-IfmfSuHH.js"></script>
+  <link rel="stylesheet" crossorigin href="/faceglow/assets/index-D5UIL9c0.css">
+</head>
 
 <body>
   <div id="root"></div>
   <!-- Forced branding overlay to ensure blue theme shows immediately -->
   <script>
-    (function() {
-       const observer = new MutationObserver(() => {
+    (function () {
+      const observer = new MutationObserver(() => {
         const logoText = document.querySelector('span.font-serif.text-xl');
         if (logoText && !logoText.dataset.patched) {
           logoText.innerHTML = `
@@ -50,10 +41,11 @@
           `;
           logoText.dataset.patched = "true";
         }
-         // Update any other branding text
+
+        // Update any other branding text
         const poweredBy = Array.from(document.querySelectorAll('div')).find(el => el.textContent.includes('Powered by'));
         if (poweredBy && poweredBy.textContent.includes('mycaafimaad')) {
-                 By.innerHTML = poweredBy.innerHTML.replace('mycaafimaad', 'THEQNEW');
+          poweredBy.innerHTML = poweredBy.innerHTML.replace('mycaafimaad', 'THEQNEW');
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });
