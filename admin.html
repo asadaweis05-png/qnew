@@ -149,6 +149,41 @@
                     </div>
                 </section>
 
+                <!-- Lessons Modal -->
+                <div id="lessons-modal" class="modal-overlay">
+                    <div class="admin-form-glass modal-window">
+                        <div class="modal-header">
+                            <h2 id="lessons-modal-title">Course Lessons</h2>
+                            <button class="btn-close" onclick="closeLessonsModal()">&times;</button>
+                        </div>
+                        <form id="lesson-form" class="admin-form">
+                            <input type="hidden" id="lesson-course-id">
+                            <input type="hidden" id="lesson-id">
+                            <div class="form-group">
+                                <label for="lesson-title">Lesson Title <span class="required">*</span></label>
+                                <input type="text" id="lesson-title" placeholder="e.g. Lesson 1: Introduction" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lesson-yt-url">YouTube URL <span class="required">*</span></label>
+                                <input type="url" id="lesson-yt-url" placeholder="https://www.youtube.com/watch?v=..."
+                                    required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" id="lesson-submit">Add Lesson</button>
+                                <button type="button" class="btn-secondary" id="lesson-cancel-edit"
+                                    style="display: none;" onclick="resetLessonForm()">Cancel Edit</button>
+                            </div>
+                        </form>
+
+                        <div class="lessons-list-container">
+                            <h3>Current Lessons</h3>
+                            <div id="lessons-list" class="admin-lessons-list">
+                                <!-- Lessons will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Articles Tab -->
                 <section id="articles-tab" class="admin-panel">
                     <div class="admin-form-glass">

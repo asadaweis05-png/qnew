@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initData();
     renderAll();
     initForms();
+    initLessonForm();
 });
 
 // --- STATE & SUPABASE ---
@@ -12,14 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
 const TABLE_NAMES = {
     courses: 'courses',
     articles: 'articles',
-    reviews: 'reviews'
+    reviews: 'reviews',
+    lessons: 'course_lessons'
 };
 
 // We will hold local copies of data for fast rendering
 let adminData = {
     courses: [],
     articles: [],
-    reviews: []
+    reviews: [],
+    currentLessons: []
 };
 
 async function initData() {
@@ -119,7 +122,7 @@ function renderCourses() {
 
     list.innerHTML = courses.map(course => `
         <div class="admin-item-card">
-            <img src="${course.thumbnailUrl}" alt="${course.title}" class="admin-item-img">
+            <img src="${course.thumbnail_url || course.thumbnailUrl}" alt="${course.title}" class="admin-item-img">
             <h4 class="admin-item-title">${course.title}</h4>
             <p class="admin-item-desc">${course.desc}</p>
             <div class="admin-item-meta">
@@ -128,6 +131,7 @@ function renderCourses() {
             </div>
             <div class="admin-item-actions">
                 <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')">Edit</button>
+                <button class="btn-icon btn-lessons-manage" onclick="openLessonsModal('${course.id}')">Lessons</button>
                 <button class="btn-icon btn-delete" onclick="deleteItem('${TABLE_NAMES.courses}', 'courses', '${course.id}')">Delete</button>
             </div>
         </div>
@@ -198,9 +202,9 @@ function initForms() {
         });
     };
 
-    setupCancel('course');
-    setupCancel('article');
-    setupCancel('review');
+    if (document.getElementById('course-cancel')) setupCancel('course');
+    if (document.getElementById('article-cancel')) setupCancel('article');
+    if (document.getElementById('review-cancel')) setupCancel('review');
 
     // Course Form
     document.getElementById('course-form').addEventListener('submit', async (e) => {
@@ -255,6 +259,7 @@ function initForms() {
                 title: document.getElementById('article-title').value,
                 tag: document.getElementById('article-tag').value,
                 image: document.getElementById('article-image').value,
+                summary: document.getElementById('article-summary').value
             };
 
             await saveItem(TABLE_NAMES.articles, 'articles', articleData, id);
@@ -282,6 +287,7 @@ function initForms() {
                 rating: document.getElementById('review-rating').value,
                 color: document.getElementById('review-color').value,
                 link: document.getElementById('review-link').value,
+                desc: document.getElementById('review-desc').value
             };
 
             await saveItem(TABLE_NAMES.reviews, 'reviews', reviewData, id);
@@ -292,6 +298,55 @@ function initForms() {
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Add Review';
+        }
+    });
+}
+
+function initLessonForm() {
+    const lessonForm = document.getElementById('lesson-form');
+    if (!lessonForm) return;
+
+    lessonForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('lesson-submit');
+        const courseId = document.getElementById('lesson-course-id').value;
+        const lessonId = document.getElementById('lesson-id').value;
+        const ytUrl = document.getElementById('lesson-yt-url').value;
+        const videoId = extractYouTubeId(ytUrl);
+
+        if (!videoId) {
+            showToast('Invalid YouTube URL for lesson', 'error');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        const lessonData = {
+            course_id: courseId,
+            title: document.getElementById('lesson-title').value,
+            video_id: videoId,
+            order_index: adminData.currentLessons.length // Basic ordering
+        };
+
+        try {
+            if (lessonId) {
+                const { error } = await supabaseClient.from(TABLE_NAMES.lessons).update(lessonData).eq('id', lessonId);
+                if (error) throw error;
+                showToast('Lesson updated', 'success');
+            } else {
+                const { error } = await supabaseClient.from(TABLE_NAMES.lessons).insert([lessonData]);
+                if (error) throw error;
+                showToast('Lesson added', 'success');
+            }
+            resetLessonForm();
+            await fetchLessons(courseId);
+        } catch (error) {
+            console.error(error);
+            showToast('Error saving lesson', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Add Lesson';
         }
     });
 }
@@ -328,6 +383,101 @@ window.deleteItem = async function (tableName, stateKey, id) {
     }
 };
 
+// --- LESSONS MANAGEMENT ---
+
+window.openLessonsModal = async function (courseId) {
+    const course = adminData.courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    document.getElementById('lesson-course-id').value = courseId;
+    document.getElementById('lessons-modal-title').textContent = `Lessons for: ${course.title}`;
+    document.getElementById('lessons-modal').classList.add('active');
+
+    await fetchLessons(courseId);
+};
+
+window.closeLessonsModal = function () {
+    document.getElementById('lessons-modal').classList.remove('active');
+    resetLessonForm();
+};
+
+async function fetchLessons(courseId) {
+    const listContainer = document.getElementById('lessons-list');
+    listContainer.innerHTML = '<div class="admin-empty">Loading lessons...</div>';
+
+    try {
+        const { data, error } = await supabaseClient
+            .from(TABLE_NAMES.lessons)
+            .select('*')
+            .eq('course_id', courseId)
+            .order('order_index', { ascending: true });
+
+        if (error) throw error;
+        adminData.currentLessons = data || [];
+        renderLessons();
+    } catch (error) {
+        console.error(error);
+        showToast('Error fetching lessons', 'error');
+    }
+}
+
+function renderLessons() {
+    const listContainer = document.getElementById('lessons-list');
+    const lessons = adminData.currentLessons;
+
+    if (lessons.length === 0) {
+        listContainer.innerHTML = createEmptyState('No lessons added for this course.');
+        return;
+    }
+
+    listContainer.innerHTML = lessons.map(lesson => `
+        <div class="lesson-item">
+            <div class="lesson-info">
+                <span class="lesson-title">${lesson.title}</span>
+                <span class="lesson-meta">YT ID: ${lesson.video_id}</span>
+            </div>
+            <div class="lesson-actions">
+                <button class="btn-lesson-edit" onclick="editLesson('${lesson.id}')">Edit</button>
+                <button class="btn-lesson-delete" onclick="deleteLesson('${lesson.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.editLesson = function (id) {
+    const lesson = adminData.currentLessons.find(l => l.id === id);
+    if (!lesson) return;
+
+    document.getElementById('lesson-id').value = lesson.id;
+    document.getElementById('lesson-title').value = lesson.title;
+    document.getElementById('lesson-yt-url').value = `https://www.youtube.com/watch?v=${lesson.video_id}`;
+
+    document.getElementById('lesson-submit').textContent = 'Update Lesson';
+    document.getElementById('lesson-cancel-edit').style.display = 'block';
+};
+
+window.deleteLesson = async function (id) {
+    if (!confirm('Delete this lesson?')) return;
+
+    const courseId = document.getElementById('lesson-course-id').value;
+    try {
+        const { error } = await supabaseClient.from(TABLE_NAMES.lessons).delete().eq('id', id);
+        if (error) throw error;
+        showToast('Lesson deleted', 'info');
+        await fetchLessons(courseId);
+    } catch (error) {
+        console.error(error);
+        showToast('Error deleting lesson', 'error');
+    }
+};
+
+window.resetLessonForm = function () {
+    document.getElementById('lesson-form').reset();
+    document.getElementById('lesson-id').value = '';
+    document.getElementById('lesson-submit').textContent = 'Add Lesson';
+    document.getElementById('lesson-cancel-edit').style.display = 'none';
+};
+
 // --- EDITING LOGIC ---
 
 window.editCourse = function (id) {
@@ -342,7 +492,8 @@ window.editCourse = function (id) {
     document.getElementById('course-desc').value = course.desc;
 
     document.getElementById('course-submit').textContent = 'Update Course';
-    document.getElementById('course-cancel').style.display = 'block';
+    const cancelBtn = document.getElementById('course-cancel');
+    if (cancelBtn) cancelBtn.style.display = 'block';
 
     // Switch to tab
     document.querySelector('[data-tab="courses-tab"]').click();
@@ -360,7 +511,8 @@ window.editArticle = function (id) {
     document.getElementById('article-summary').value = article.summary;
 
     document.getElementById('article-submit').textContent = 'Update Article';
-    document.getElementById('article-cancel').style.display = 'block';
+    const cancelBtn = document.getElementById('article-cancel');
+    if (cancelBtn) cancelBtn.style.display = 'block';
 
     document.querySelector('[data-tab="articles-tab"]').click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -378,7 +530,8 @@ window.editReview = function (id) {
     document.getElementById('review-desc').value = review.desc;
 
     document.getElementById('review-submit').textContent = 'Update Review';
-    document.getElementById('review-cancel').style.display = 'block';
+    const cancelBtn = document.getElementById('review-cancel');
+    if (cancelBtn) cancelBtn.style.display = 'block';
 
     document.querySelector('[data-tab="reviews-tab"]').click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -388,7 +541,8 @@ function resetForm(type) {
     document.getElementById(`${type}-form`).reset();
     document.getElementById(`${type}-id`).value = '';
     document.getElementById(`${type}-submit`).textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-    document.getElementById(`${type}-cancel`).style.display = 'none';
+    const cancelBtn = document.getElementById(`${type}-cancel`);
+    if (cancelBtn) cancelBtn.style.display = 'none';
 }
 
 // --- UTILS ---
@@ -401,6 +555,13 @@ function extractYouTubeId(url) {
 
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
+    if (!container) {
+        const div = document.createElement('div');
+        div.id = 'toast-container';
+        div.className = 'toast-container';
+        document.body.appendChild(div);
+    }
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
@@ -430,7 +591,8 @@ function showToast(message, type = 'info') {
         document.head.appendChild(style);
     }
 
-    container.appendChild(toast);
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.appendChild(toast);
 
     setTimeout(() => {
         toast.classList.add('fade-out');

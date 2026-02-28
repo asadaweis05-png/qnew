@@ -397,6 +397,33 @@
     </section>
 
     <!-- ======= FOOTER ======= -->
+    <!-- ======= COURSE PLAYER MODAL ======= -->
+    <div id="coursePlayerModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content player-modal-content">
+            <button class="modal-close" aria-label="Close Modal">&times;</button>
+            <div class="player-layout">
+                <div class="player-main">
+                    <div class="video-container">
+                        <iframe id="mainVideoPlayer" src="" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                    <div class="player-info">
+                        <h2 id="currentLessonTitle">Lesson Title</h2>
+                        <p id="currentCourseTitle" class="course-subtitle">Course Title</p>
+                    </div>
+                </div>
+                <div class="player-sidebar">
+                    <h3>Course Lessons</h3>
+                    <div id="lessonPlaylist" class="lesson-playlist">
+                        <!-- Lessons populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
