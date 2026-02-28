@@ -397,7 +397,41 @@
     </section>
 
     <!-- ======= FOOTER ======= -->
+    <!-- ======= COURSE WAITLIST MODAL ======= -->
+    <div id="courseWaitlistModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content waitlist-modal-content">
+            <button class="modal-close" aria-label="Close Modal">&times;</button>
+            <div class="waitlist-brand">
+                <svg class="logo-icon" width="24" height="24" viewBox="0 0 28 28" fill="none">
+                    <path
+                        d="M14 0L17.5 7L25.5 3.5L20 10.5L28 14L20 17.5L25.5 24.5L17.5 21L14 28L10.5 21L2.5 24.5L8 17.5L0 14L8 10.5L2.5 3.5L10.5 7L14 0Z"
+                        fill="#2563eb" />
+                </svg>
+                <span>JOIN THE <span class="logo-accent">WAITLIST</span></span>
+            </div>
+            <h2 class="waitlist-title" id="waitlistCourseTitle">Course Title</h2>
+            <p class="waitlist-msg">Fadlan noo dulqaado courses-ka waa ay soo socdaan saacado kadib linkiga email-kaaga
+                ayaa laguugu diri doonaa mahadsanid.</p>
+            <form id="waitlistForm" class="modal-form">
+                <input type="hidden" id="waitlistCourseId">
+                <div class="form-group">
+                    <label for="waitlistName">Magacaaga / Name</label>
+                    <input type="text" id="waitlistName" placeholder="Tusaale: Maxamed Cali..." required>
+                </div>
+                <div class="form-group">
+                    <label for="waitlistEmail">Email-kaaga / Email</label>
+                    <input type="email" id="waitlistEmail" placeholder="example@gmail.com" required>
+                </div>
+                <button type="submit" class="btn-primary waitlist-submit" id="waitlistSubmit">
+                    <span>Ku soo biir / Join Waitlist</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- ======= COURSE PLAYER MODAL ======= -->
+
     <div id="coursePlayerModal" class="modal">
         <div class="modal-backdrop"></div>
         <div class="modal-content player-modal-content">

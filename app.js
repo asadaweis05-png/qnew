@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initToastSystem();
     loadAdminData();
     initSupabaseAuth();
+    initWaitlistForm();
 });
 
 // Global state for courses
@@ -186,8 +187,6 @@ function initNewsletter() {
 
 // ===== MODALS =====
 function initModals() {
-    const backdrop = document.querySelector('.modal-backdrop');
-
     document.querySelectorAll('.modal-close, .modal-backdrop').forEach(btn => {
         btn.addEventListener('click', closeAllModals);
     });
@@ -247,7 +246,7 @@ async function loadAdminData() {
             let coursesHTML = '';
             allCourses.forEach(course => {
                 coursesHTML += `
-                <div class="course-card reveal" onclick="openCoursePlayer('${course.id}')" style="cursor:pointer;">
+                <div class="course-card reveal" onclick="openWaitlistModal('${course.id}')" style="cursor:pointer;">
                     <span class="course-badge">Course</span>
                     <div class="course-img-wrap">
                         <img src="${course.thumbnail_url || course.thumbnailUrl}" alt="${course.title}" loading="lazy">
@@ -269,7 +268,7 @@ async function loadAdminData() {
             coursesGrid.insertAdjacentHTML('afterbegin', coursesHTML);
         }
 
-        // Articles & Reviews...
+        // 2. Articles 
         const { data: articles } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
         const newsSidebar = document.querySelector('.news-sidebar');
         if (newsSidebar && articles && articles.length > 0) {
@@ -289,6 +288,7 @@ async function loadAdminData() {
             newsSidebar.insertAdjacentHTML('afterbegin', articlesHTML);
         }
 
+        // 3. Reviews
         const { data: reviews } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
         const reviewsGrid = document.querySelector('.reviews-grid');
         if (reviewsGrid && reviews && reviews.length > 0) {
@@ -315,7 +315,57 @@ async function loadAdminData() {
     }
 }
 
-// ===== COURSE PLAYER LOGIC =====
+// ===== WAITLIST LOGIC =====
+window.openWaitlistModal = function (courseId) {
+    const course = allCourses.find(c => c.id === courseId);
+    if (!course) return;
+
+    const modal = document.getElementById('courseWaitlistModal');
+    const titleEl = document.getElementById('waitlistCourseTitle');
+    const idInput = document.getElementById('waitlistCourseId');
+
+    titleEl.textContent = course.title;
+    idInput.value = courseId;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+
+function initWaitlistForm() {
+    const form = document.getElementById('waitlistForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('waitlistSubmit');
+        const courseId = document.getElementById('waitlistCourseId').value;
+        const name = document.getElementById('waitlistName').value;
+        const email = document.getElementById('waitlistEmail').value;
+
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Diridda... / Sending...';
+
+        try {
+            const { error } = await supabaseClient
+                .from('course_waitlist')
+                .insert([{ course_id: courseId, name: name, email: email }]);
+
+            if (error) throw error;
+
+            showToast('Waad ku mahadsantahay! Email ayaa laguugu soo diri doonaa.', 'success');
+            closeAllModals();
+            form.reset();
+        } catch (err) {
+            console.error(err);
+            showToast('Khalad ayaa dhacay. Fadlan markale isku day.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.querySelector('span').textContent = 'Ku soo biir / Join Waitlist';
+        }
+    });
+}
+
+// ===== COURSE PLAYER LOGIC (Reserved for later) =====
 window.openCoursePlayer = async function (courseId) {
     const course = allCourses.find(c => c.id === courseId);
     if (!course) return;
@@ -340,7 +390,6 @@ window.openCoursePlayer = async function (courseId) {
         if (error) throw error;
 
         if (!lessons || lessons.length === 0) {
-            // Fallback to main course video
             playlistContainer.innerHTML = `
                 <div class="playlist-item active" onclick="playLesson('${course.video_id}', 'Introduction')">
                     <span class="playlist-item-num">1</span>

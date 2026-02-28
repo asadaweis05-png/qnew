@@ -1013,6 +1013,7 @@ ul {
     margin-bottom: 16px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1243,6 +1244,7 @@ ul {
     color: var(--text-primary);
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition: color var(--transition);
@@ -1944,6 +1946,48 @@ ul {
 
 .toast-close:hover {
     color: var(--text-primary);
+}
+
+/* ===== WAITLIST MODAL ===== */
+.waitlist-modal-content {
+    max-width: 480px !important;
+    text-align: center;
+}
+
+.waitlist-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+}
+
+.waitlist-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.waitlist-msg {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    padding: 16px;
+    background: rgba(0, 229, 255, 0.05);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+.waitlist-submit {
+    margin-top: 10px;
+    height: 52px;
+    font-weight: 700;
 }
 
 /* ===== COURSE PLAYER MODAL ===== */
