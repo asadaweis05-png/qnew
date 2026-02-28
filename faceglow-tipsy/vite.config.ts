@@ -6,6 +6,11 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: "/faceglow/",
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    emptyOutDir: true,
+  },
   server: {
     host: "::",
     port: 8080,

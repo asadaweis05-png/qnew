@@ -40,16 +40,16 @@ interface AnalysisResultProps {
   };
 }
 
-const MetricCard = ({ 
-  title, 
-  value, 
-  icon: Icon, 
+const MetricCard = ({
+  title,
+  value,
+  icon: Icon,
   subtitle,
-  delay = 0 
-}: { 
-  title: string; 
-  value: number; 
-  icon: React.ElementType; 
+  delay = 0
+}: {
+  title: string;
+  value: number;
+  icon: React.ElementType;
   subtitle?: string;
   delay?: number;
 }) => {
@@ -68,7 +68,7 @@ const MetricCard = ({
   };
 
   return (
-    <div 
+    <div
       className="analysis-card animate-slideUp opacity-0"
       style={{ animationDelay: `${delay}s`, animationFillMode: 'forwards' }}
     >
@@ -83,7 +83,7 @@ const MetricCard = ({
           <Icon className="w-5 h-5 text-primary" />
         </div>
       </div>
-      
+
       <div className="space-y-4">
         <div className="flex items-end justify-between">
           <span className={cn("text-4xl font-serif font-bold", getScoreColor(value))}>
@@ -94,7 +94,7 @@ const MetricCard = ({
             {getScoreLabel(value)}
           </div>
         </div>
-        
+
         <div className="progress-track">
           <div
             className="progress-fill"
@@ -146,7 +146,7 @@ const SkinTypeCard = ({ skinType, features }: { skinType: SkinTypeData; features
   const Icon = getSkinTypeIcon(skinType.type);
 
   return (
-    <div 
+    <div
       className={cn(
         "relative overflow-hidden rounded-2xl border p-6 animate-slideUp opacity-0 bg-gradient-to-br",
         getSkinTypeColor(skinType.type)
@@ -155,7 +155,7 @@ const SkinTypeCard = ({ skinType, features }: { skinType: SkinTypeData; features
     >
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full" />
-      
+
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-6">
           <div className="space-y-1">
@@ -172,7 +172,7 @@ const SkinTypeCard = ({ skinType, features }: { skinType: SkinTypeData; features
         <div className="flex items-center gap-2 mb-6">
           <span className="text-sm text-muted-foreground">Confidence:</span>
           <div className="flex-1 h-2 bg-background/30 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-primary rounded-full transition-all duration-1000"
               style={{ width: `${skinType.confidence}%` }}
             />
@@ -198,7 +198,7 @@ const SkinTypeCard = ({ skinType, features }: { skinType: SkinTypeData; features
             <p className="text-xs text-muted-foreground mb-2">Detected Indicators:</p>
             <div className="flex flex-wrap gap-2">
               {skinType.indicators.map((indicator, index) => (
-                <span 
+                <span
                   key={index}
                   className="px-3 py-1.5 rounded-lg bg-background/40 backdrop-blur-sm text-xs font-medium"
                 >
@@ -231,7 +231,7 @@ const SkinTypeCard = ({ skinType, features }: { skinType: SkinTypeData; features
 
 const DetailedAnalysisCard = ({ analysis }: { analysis: DetailedAnalysis }) => {
   return (
-    <div 
+    <div
       className="analysis-card animate-slideUp opacity-0"
       style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
     >
@@ -271,7 +271,7 @@ const DetailedAnalysisCard = ({ analysis }: { analysis: DetailedAnalysis }) => {
 
 export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
   const { t } = useTranslation();
-  
+
   const primaryMetrics = [
     { key: 'hydration', title: t('hydration'), value: results.hydration, icon: Droplet },
     { key: 'clarity', title: t('clarity'), value: results.clarity, icon: Sparkles },
@@ -306,7 +306,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
       )}
 
       {/* Primary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {primaryMetrics.map((metric, index) => (
           <MetricCard
             key={metric.key}
@@ -320,7 +320,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
 
       {/* Secondary Metrics */}
       {secondaryMetrics.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {secondaryMetrics.map((metric, index) => (
             <MetricCard
               key={metric.key}
@@ -336,7 +336,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
 
       {/* Skin Concerns */}
       {results.concerns && results.concerns.length > 0 && (
-        <div 
+        <div
           className="analysis-card animate-slideUp opacity-0"
           style={{ animationDelay: '0.7s', animationFillMode: 'forwards' }}
         >
@@ -364,7 +364,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
       )}
 
       {/* Recommendations */}
-      <div 
+      <div
         className="analysis-card animate-slideUp opacity-0"
         style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}
       >
@@ -379,8 +379,8 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         </div>
         <div className="space-y-3">
           {results.recommendations.map((recommendation, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="recommendation-item group"
             >
               <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-primary/10 border border-primary/30 text-primary flex items-center justify-center text-sm font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
