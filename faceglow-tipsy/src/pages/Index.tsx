@@ -34,8 +34,9 @@ const analyzeImage = async (file: File) => {
 
   console.log('Analyzing face with Direct Gemini API from Frontend...');
 
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+  const tryGemini = async (model: string, endpoint: string) => {
+    console.log(`Trying Gemini API with model: ${model}, endpoint: ${endpoint}...`);
+    const response = await fetch(`https://generativelanguage.googleapis.com/${endpoint}/models/${model}:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ Respond with ONLY a JSON object (no markdown, no code blocks) with this exact st
   "talooyinka": ["6-8 specific Somali recommendations"],
   "features": { 
     "midabMaqaarka": "Somali color description", 
-    "daQiyaas": estimated_age_number, 
+    "daQiyaas": 25, 
     "nooMaqaarka": "Somali skin type name" 
   },
   "detailedAnalysis": { 
@@ -101,44 +102,55 @@ Respond with ONLY a JSON object (no markdown, no code blocks) with this exact st
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error details:', errorText);
-      throw new Error(`Gemini API call failed: ${response.status}`);
+      console.error(`Gemini API Error Detail (${model} - ${endpoint}):`, errorText);
+      throw new Error(`API ${response.status}: ${errorText || response.statusText}`);
     }
 
-    const aiResponse = await response.json();
-    console.log('Gemini AI Raw Response:', aiResponse);
+    return response.json();
+  };
 
-    const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    if (!aiContent) throw new Error('AI returned no content');
+  try {
+    let data;
+    try {
+      // Primary attempt: Stable v1 endpoint with gemini-1.5-flash-latest
+      data = await tryGemini('gemini-1.5-flash-latest', 'v1');
+    } catch (e1) {
+      console.log('Primary Gemini call failed, trying fallback...');
+      // Fallback attempt: v1beta endpoint with gemini-2.0-flash
+      data = await tryGemini('gemini-2.0-flash', 'v1beta');
+    }
 
-    const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Invalid AI response format');
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      console.error('Invalid AI Response Structure:', data);
+      throw new Error('Hawaalaha AI ma soo celin xog sax ah.');
+    }
 
-    const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+    const analysis = JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
 
     return {
-      hydration: result.skinHealth?.qoyaan || 70,
-      clarity: result.skinHealth?.nadiifnimo || 70,
-      texture: result.skinHealth?.dhadhanka || 70,
-      acne: result.skinHealth?.acne || 100,
-      wrinkles: result.skinHealth?.wrinkles || 100,
-      darkCircles: result.skinHealth?.darkCircles || 100,
-      skinType: result.skinType ? {
-        type: result.skinType.type || 'normal',
-        confidence: result.skinType.confidence || 85,
-        indicators: result.skinType.indicators || [],
-        tZone: result.skinType.tZone || 'normal',
-        cheeks: result.skinType.cheeks || 'normal'
+      hydration: analysis.skinHealth?.qoyaan || 70,
+      clarity: analysis.skinHealth?.nadiifnimo || 70,
+      texture: analysis.skinHealth?.dhadhanka || 70,
+      acne: analysis.skinHealth?.acne || 100,
+      wrinkles: analysis.skinHealth?.wrinkles || 100,
+      darkCircles: analysis.skinHealth?.darkCircles || 100,
+      skinType: analysis.skinType ? {
+        type: analysis.skinType.type || 'normal',
+        confidence: analysis.skinType.confidence || 85,
+        indicators: analysis.skinType.indicators || [],
+        tZone: analysis.skinType.tZone || 'normal',
+        cheeks: analysis.skinType.cheeks || 'normal'
       } : undefined,
-      detailedAnalysis: result.detailedAnalysis ? {
-        oilLevel: result.detailedAnalysis.oilLevel || 'normal',
-        dryness: result.detailedAnalysis.dryness || 'none',
-        poreSize: result.detailedAnalysis.poreSize || 'small',
-        overallCondition: result.detailedAnalysis.overallCondition || ''
+      detailedAnalysis: analysis.detailedAnalysis ? {
+        oilLevel: analysis.detailedAnalysis.oilLevel || 'normal',
+        dryness: analysis.detailedAnalysis.dryness || 'none',
+        poreSize: analysis.detailedAnalysis.poreSize || 'small',
+        overallCondition: analysis.detailedAnalysis.overallCondition || ''
       } : undefined,
-      features: result.features || undefined,
-      concerns: result.concerns || [],
-      recommendations: result.talooyinka || []
+      features: analysis.features || undefined,
+      concerns: analysis.concerns || [],
+      recommendations: analysis.talooyinka || []
     };
   } catch (error) {
     console.error('AI Analysis Error:', error);

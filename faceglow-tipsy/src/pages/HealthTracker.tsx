@@ -328,13 +328,15 @@ const HealthTracker = () => {
 
       console.log('Fetching AI Insights with Direct Gemini API...');
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
+      const tryGemini = async (model: string, endpoint: string) => {
+        console.log(`Trying Gemini AI Insight API with model: ${model}, endpoint: ${endpoint}...`);
+        const response = await fetch(`https://generativelanguage.googleapis.com/${endpoint}/models/${model}:generateContent?key=${GOOGLE_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
 MUHIIM: Dhammaan jawaabaha waa inay ku qornaadaan AF-SOOMAALI KELIYA.
 
 XOGTA:
@@ -347,37 +349,51 @@ Ka jawaab JSON object keliya:
   "recommendations": ["Somali recommendations"],
   "correlations": ["Somali correlations"]
 }`
+              }]
             }]
-          }]
-        })
-      });
+          })
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Health Gemini API error details:', errorText);
-        throw new Error(`AI analysis failed: ${response.status}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Gemini Insights Error Detail (${model} - ${endpoint}):`, errorText);
+          throw new Error(`API ${response.status}: ${errorText || response.statusText}`);
+        }
+
+        return response.json();
+      };
+
+      try {
+        let data;
+        try {
+          // Primary attempt: Stable v1 endpoint with gemini-1.5-flash-latest
+          data = await tryGemini('gemini-1.5-flash-latest', 'v1');
+        } catch (e1) {
+          console.log('Primary Insights call failed, trying fallback...');
+          // Fallback attempt: v1beta endpoint with gemini-2.0-flash
+          data = await tryGemini('gemini-2.0-flash', 'v1beta');
+        }
+
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) {
+          console.error('Invalid Insights Response Structure:', data);
+          throw new Error('AI results were incorrectly formatted.');
+        }
+
+        const parsed = JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
+        setAiAnalysis(parsed);
+      } catch (error: any) {
+        console.error('Full AI Insights Error:', error);
+        toast({
+          title: "Error",
+          description: `Failed to fetch AI insights: ${error.message}`,
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingInsights(false);
       }
-
-      const aiResponse = await response.json();
-      console.log('Health AI Raw Response:', aiResponse);
-
-      const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (!aiContent) throw new Error('AI returned no content');
-
-      const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.error('Failed to find JSON in Health AI response:', aiContent);
-        throw new Error('Invalid AI response format');
-      }
-
-      const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-
-      setAiAnalysis(result);
-      toast({ title: 'Analysis Complete', description: 'Your health insights are ready!' });
     } catch (error) {
-      console.error('AI Insights Error:', error);
-      toast({ title: 'Error', description: 'Failed to analyze health data', variant: 'destructive' });
-    } finally {
+      console.error('Outer Fetch AI Insights Error:', error);
       setLoadingInsights(false);
     }
   };
