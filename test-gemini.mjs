@@ -1,25 +1,32 @@
-const apiKey = 'AIzaSyCcQk6281y1Wju4VdLpC1avhYtz-GVLn8o';
-const model1 = 'gemini-1.5-flash';
-const model2 = 'gemini-2.0-flash';
+const apiKey = 'AIzaSyCC7qSF7ed7kLfRNkumv2hENUxvX3vvn4s';
+const models = ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-flash-latest'];
+const versions = ['v1', 'v1beta'];
 
-async function verify(model) {
+async function verify(version, model) {
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: "Hello" }] }] })
         });
-        console.log(`Model ${model}: ${res.status} ${res.statusText}`);
+        console.log(`${version} ${model}: ${res.status} ${res.statusText}`);
         const text = await res.text();
-        console.log(`Body: ${text.substring(0, 100)}...`);
+        if (res.ok) {
+            console.log(`SUCCESS!`);
+        } else {
+            console.log(`Error: ${text.substring(0, 100)}`);
+        }
     } catch (e) {
         console.error(e);
     }
 }
 
 async function run() {
-    await verify(model1);
-    await verify(model2);
+    for (const v of versions) {
+        for (const m of models) {
+            await verify(v, m);
+        }
+    }
 }
 
 run();
