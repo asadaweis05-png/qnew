@@ -25,24 +25,26 @@ const analyzeImage = async (file: File) => {
   const base64Data = imageBase64.split(',')[1] || imageBase64;
   const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyAdMGSoftp-VMC2BWVSWhg-ZxYLETMP6kk';
 
   if (!GOOGLE_API_KEY) {
+    console.error('API Key Missing');
     throw new Error('Google API Key is not configured');
   }
 
   console.log('Analyzing face with Direct Gemini API from Frontend...');
 
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          {
-            text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            {
+              text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
 
 CRITICAL: You MUST analyze the actual image provided. Look at:
 - Visible shine/oiliness on forehead, nose, chin (T-zone)
@@ -69,43 +71,52 @@ Respond with ONLY a JSON object (no markdown, no code blocks) with this exact st
   "features": { "midabMaqaarka": "Somali description", "daQiyaas": number, "nooMaqaarka": "Somali type" },
   "detailedAnalysis": { "overallCondition": "Somali summary" }
 }`
-          },
-          {
-            inline_data: {
-              mime_type: mimeType,
-              data: base64Data
+            },
+            {
+              inline_data: {
+                mime_type: mimeType,
+                data: base64Data
+              }
             }
-          }
-        ]
-      }]
-    })
-  });
+          ]
+        }]
+      })
+    });
 
-  if (!response.ok) {
-    throw new Error('Gemini API call failed');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error details:', errorText);
+      throw new Error(`Gemini API call failed: ${response.status}`);
+    }
+
+    const aiResponse = await response.json();
+    console.log('Gemini AI Raw Response:', aiResponse);
+
+    const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!aiContent) throw new Error('AI returned no content');
+
+    const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Invalid AI response format');
+
+    const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+
+    return {
+      hydration: result.skinHealth?.qoyaan || 70,
+      clarity: result.skinHealth?.nadiifnimo || 70,
+      texture: result.skinHealth?.dhadhanka || 70,
+      acne: result.skinHealth?.acne || 100,
+      wrinkles: result.skinHealth?.wrinkles || 100,
+      darkCircles: result.skinHealth?.darkCircles || 100,
+      skinType: result.skinType?.type || null,
+      detailedAnalysis: result.detailedAnalysis?.overallCondition || null,
+      features: result.features || null,
+      concerns: result.concerns || [],
+      recommendations: result.talooyinka || []
+    };
+  } catch (error) {
+    console.error('AI Analysis Error:', error);
+    throw error;
   }
-
-  const aiResponse = await response.json();
-  const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-  const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('Invalid AI response format');
-
-  const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-
-  return {
-    hydration: result.skinHealth?.qoyaan || 70,
-    clarity: result.skinHealth?.nadiifnimo || 70,
-    texture: result.skinHealth?.dhadhanka || 70,
-    acne: result.skinHealth?.acne || 100,
-    wrinkles: result.skinHealth?.wrinkles || 100,
-    darkCircles: result.skinHealth?.darkCircles || 100,
-    skinType: result.skinType?.type || null,
-    detailedAnalysis: result.detailedAnalysis?.overallCondition || null,
-    features: result.features || null,
-    concerns: result.concerns || [],
-    recommendations: result.talooyinka || []
-  };
 };
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);

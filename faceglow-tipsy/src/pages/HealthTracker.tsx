@@ -299,8 +299,11 @@ const HealthTracker = () => {
     setLoadingInsights(true);
 
     try {
-      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-      if (!GOOGLE_API_KEY) throw new Error('Google API key not configured');
+      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyAdMGSoftp-VMC2BWVSWhg-ZxYLETMP6kk';
+      if (!GOOGLE_API_KEY) {
+        console.error('API Key Missing in HealthTracker');
+        throw new Error('Google API key not configured');
+      }
 
       const dataSummary = {
         vitamins: vitaminLogs.map(v => ({ name: v.vitamin_name, dosage: v.dosage, date: v.taken_at })),
@@ -322,6 +325,8 @@ const HealthTracker = () => {
           water: b.water_glasses
         }))
       };
+
+      console.log('Fetching AI Insights with Direct Gemini API...');
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
         method: 'POST',
@@ -347,12 +352,25 @@ Ka jawaab JSON object keliya:
         })
       });
 
-      if (!response.ok) throw new Error('AI analysis failed');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Health Gemini API error details:', errorText);
+        throw new Error(`AI analysis failed: ${response.status}`);
+      }
 
       const aiResponse = await response.json();
+      console.log('Health AI Raw Response:', aiResponse);
+
       const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (!aiContent) throw new Error('AI returned no content');
+
       const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
-      const result = JSON.parse(jsonMatch?.[1] || jsonMatch?.[0] || aiContent);
+      if (!jsonMatch) {
+        console.error('Failed to find JSON in Health AI response:', aiContent);
+        throw new Error('Invalid AI response format');
+      }
+
+      const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
 
       setAiAnalysis(result);
       toast({ title: 'Analysis Complete', description: 'Your health insights are ready!' });
