@@ -3,6 +3,7 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { AdSlot } from '@/components/AdSlot';
 import { ProductAds } from '@/components/ProductAds';
+import { GoogleAd } from '@/components/GoogleAd';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap, Heart, Menu, X, Activity, Pill } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -135,9 +136,9 @@ const Index = () => {
       const now = new Date();
 
       // Check if subscription has expired
-      let isSubscriptionActive = data.has_paid;
-      if (data.has_paid && data.subscription_expires_at) {
-        const expiresAt = new Date(data.subscription_expires_at);
+      let isSubscriptionActive = (data as any).has_paid;
+      if ((data as any).has_paid && (data as any).subscription_expires_at) {
+        const expiresAt = new Date((data as any).subscription_expires_at);
         if (now > expiresAt) {
           isSubscriptionActive = false;
           // Update the database to reflect expired status
@@ -394,16 +395,16 @@ const Index = () => {
     </nav>
 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-      {/* Top Banner Ad */}
+      {/* Top Banner Ad (Google AdSense) */}
       <div className="mb-8">
-        <AdSlot type="banner" placement="top-banner" />
+        <GoogleAd slot="top-banner-faceglow" format="auto" />
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Sidebar */}
         <aside className="hidden lg:block">
           <div className="sticky top-24">
-            <AdSlot type="skyscraper" placement="left-skyscraper" />
+            <GoogleAd slot="left-skyscraper-faceglow" format="auto" responsive={false} style={{ display: 'block', width: '160px', height: '600px' }} />
           </div>
         </aside>
 
@@ -467,9 +468,9 @@ const Index = () => {
             <ImageUpload onImageSelect={handleImageSelect} />
           </section>
 
-          {/* Middle Ad */}
-          <div>
-            <AdSlot type="square" placement="middle-square" />
+          {/* Middle Ad (Google AdSense) */}
+          <div className="py-8">
+            <GoogleAd slot="middle-square-faceglow" format="auto" />
           </div>
 
           {/* Loading State */}
@@ -489,13 +490,13 @@ const Index = () => {
           {!isAnalyzing && analysisResults && <>
             <AnalysisResult results={analysisResults} />
             <div className="mt-8">
-              <AdSlot type="video" placement="post-results-video" />
+              <GoogleAd slot="post-results-faceglow" format="auto" />
             </div>
           </>}
 
-          {/* Bottom Banner Ad */}
+          {/* Bottom Banner Ad (Google AdSense) */}
           <div className="pt-8">
-            <AdSlot type="banner" placement="bottom-banner" />
+            <GoogleAd slot="bottom-banner-faceglow" format="auto" />
           </div>
         </main>
 

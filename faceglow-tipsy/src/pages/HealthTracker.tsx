@@ -39,6 +39,7 @@ import { HealthGoals } from '@/components/HealthGoals';
 import { HealthReportExport } from '@/components/HealthReportExport';
 import { HealthCharts } from '@/components/HealthCharts';
 import { HealthComparison } from '@/components/HealthComparison';
+import { GoogleAd } from '@/components/GoogleAd';
 import { cn } from '@/lib/utils';
 
 interface VitaminLog {
@@ -506,6 +507,11 @@ const HealthTracker = () => {
                 </div>
               )}
             </div>
+
+            {/* Middle Ad (Google AdSense) */}
+            <div className="my-8">
+              <GoogleAd slot="middle-gut-health" format="auto" />
+            </div>
           </TabsContent>
 
           {/* Gut Health Tab */}
@@ -515,6 +521,11 @@ const HealthTracker = () => {
                 <Apple className="w-5 h-5 text-primary" />
                 Daily Gut Health Check (Baaritaanka Caafimaadka Caloosha)
               </h3>
+
+              {/* Header Ad (Google AdSense) */}
+              <div className="mb-6">
+                <GoogleAd slot="header-health-tracker" format="auto" />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Digestion Score */}
@@ -915,7 +926,8 @@ const HealthTracker = () => {
           {/* AI Insights Tab */}
           <TabsContent value="insights" className="space-y-6 animate-fadeIn">
             <div className="analysis-card">
-              <div className="flex items-center justify-between mb-6">
+              <GoogleAd slot="ai-insights-top" format="auto" />
+              <div className="flex items-center justify-between mt-6 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                     <Brain className="w-5 h-5 text-primary" />
