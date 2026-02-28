@@ -59,17 +59,33 @@ Respond with ONLY a JSON object (no markdown, no code blocks) with this exact st
 
 {
   "skinHealth": {
-    "qoyaan": <0-100 hydration level>,
-    "nadiifnimo": <0-100 cleanliness>,
-    "dhadhanka": <0-100 texture smoothness>,
-    "acne": <0-100 where 100=no acne>,
-    "wrinkles": <0-100 where 100=no wrinkles>,
-    "darkCircles": <0-100 where 100=no dark circles>
+    "qoyaan": <number 0-100>,
+    "nadiifnimo": <number 0-100>,
+    "dhadhanka": <number 0-100>,
+    "acne": <number 0-100>,
+    "wrinkles": <number 0-100>,
+    "darkCircles": <number 0-100>
   },
-  "skinType": { "type": "oily/dry/combination/normal", "confidence": 50-100 },
+  "skinType": { 
+    "type": "oily/dry/combination/normal", 
+    "confidence": 50-100,
+    "indicators": ["3-4 technical Somali skin indicators observed"],
+    "tZone": "oily/dry/normal Somali description",
+    "cheeks": "oily/dry/normal Somali description"
+  },
   "talooyinka": ["6-8 specific Somali recommendations"],
-  "features": { "midabMaqaarka": "Somali description", "daQiyaas": number, "nooMaqaarka": "Somali type" },
-  "detailedAnalysis": { "overallCondition": "Somali summary" }
+  "features": { 
+    "midabMaqaarka": "Somali color description", 
+    "daQiyaas": estimated_age_number, 
+    "nooMaqaarka": "Somali skin type name" 
+  },
+  "detailedAnalysis": { 
+    "oilLevel": "Somali description",
+    "dryness": "Somali description",
+    "poreSize": "Somali description",
+    "overallCondition": "Comprehensive Somali summary of skin health" 
+  },
+  "concerns": ["3-4 specific Somali skin concerns if any"]
 }`
             },
             {
@@ -107,9 +123,20 @@ Respond with ONLY a JSON object (no markdown, no code blocks) with this exact st
       acne: result.skinHealth?.acne || 100,
       wrinkles: result.skinHealth?.wrinkles || 100,
       darkCircles: result.skinHealth?.darkCircles || 100,
-      skinType: result.skinType?.type || null,
-      detailedAnalysis: result.detailedAnalysis?.overallCondition || null,
-      features: result.features || null,
+      skinType: result.skinType ? {
+        type: result.skinType.type || 'normal',
+        confidence: result.skinType.confidence || 85,
+        indicators: result.skinType.indicators || [],
+        tZone: result.skinType.tZone || 'normal',
+        cheeks: result.skinType.cheeks || 'normal'
+      } : undefined,
+      detailedAnalysis: result.detailedAnalysis ? {
+        oilLevel: result.detailedAnalysis.oilLevel || 'normal',
+        dryness: result.detailedAnalysis.dryness || 'none',
+        poreSize: result.detailedAnalysis.poreSize || 'small',
+        overallCondition: result.detailedAnalysis.overallCondition || ''
+      } : undefined,
+      features: result.features || undefined,
       concerns: result.concerns || [],
       recommendations: result.talooyinka || []
     };
@@ -217,10 +244,11 @@ const Index = () => {
         upload_count: uploadCount + 1
       }).eq('user_id', user.id);
       setUploadCount(uploadCount + 1);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Analysis failed in Index:', error);
       toast({
         title: t('analysisFailed'),
-        description: t('analysisFailedDesc'),
+        description: error.message || t('analysisFailedDesc'),
         variant: "destructive"
       });
     } finally {
