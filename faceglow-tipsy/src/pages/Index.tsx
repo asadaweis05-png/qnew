@@ -22,32 +22,89 @@ const analyzeImage = async (file: File) => {
     reader.readAsDataURL(file);
   });
   const imageBase64 = await base64Promise;
-  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-face`, {
+  const base64Data = imageBase64.split(',')[1] || imageBase64;
+  const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+
+  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+  if (!GOOGLE_API_KEY) {
+    throw new Error('Google API Key is not configured');
+  }
+
+  console.log('Analyzing face with Direct Gemini API from Frontend...');
+
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
     },
     body: JSON.stringify({
-      imageBase64
+      contents: [{
+        parts: [
+          {
+            text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
+
+CRITICAL: You MUST analyze the actual image provided. Look at:
+- Visible shine/oiliness on forehead, nose, chin (T-zone)
+- Dry patches, flakiness, or rough texture
+- Pore size and visibility
+- Skin texture and tone
+- Any acne, blemishes, or spots
+- Under-eye area condition
+- Fine lines or wrinkles
+
+Respond with ONLY a JSON object (no markdown, no code blocks) with this exact structure:
+
+{
+  "skinHealth": {
+    "qoyaan": <0-100 hydration level>,
+    "nadiifnimo": <0-100 cleanliness>,
+    "dhadhanka": <0-100 texture smoothness>,
+    "acne": <0-100 where 100=no acne>,
+    "wrinkles": <0-100 where 100=no wrinkles>,
+    "darkCircles": <0-100 where 100=no dark circles>
+  },
+  "skinType": { "type": "oily/dry/combination/normal", "confidence": 50-100 },
+  "talooyinka": ["6-8 specific Somali recommendations"],
+  "features": { "midabMaqaarka": "Somali description", "daQiyaas": number, "nooMaqaarka": "Somali type" },
+  "detailedAnalysis": { "overallCondition": "Somali summary" }
+}`
+          },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: base64Data
+            }
+          }
+        ]
+      }]
     })
   });
+
   if (!response.ok) {
-    throw new Error('Analysis failed');
+    throw new Error('Gemini API call failed');
   }
-  const result = await response.json();
+
+  const aiResponse = await response.json();
+  const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('Invalid AI response format');
+
+  const result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+
   return {
-    hydration: result.skinHealth?.qoyaan || result.skinHealth?.hydration || 70,
-    clarity: result.skinHealth?.nadiifnimo || result.skinHealth?.clarity,
-    texture: result.skinHealth?.dhadhanka || result.skinHealth?.texture,
-    acne: result.skinHealth?.acne,
-    wrinkles: result.skinHealth?.wrinkles,
-    darkCircles: result.skinHealth?.darkCircles,
-    skinType: result.skinType || null,
-    detailedAnalysis: result.detailedAnalysis || null,
+    hydration: result.skinHealth?.qoyaan || 70,
+    clarity: result.skinHealth?.nadiifnimo || 70,
+    texture: result.skinHealth?.dhadhanka || 70,
+    acne: result.skinHealth?.acne || 100,
+    wrinkles: result.skinHealth?.wrinkles || 100,
+    darkCircles: result.skinHealth?.darkCircles || 100,
+    skinType: result.skinType?.type || null,
+    detailedAnalysis: result.detailedAnalysis?.overallCondition || null,
     features: result.features || null,
-    concerns: result.walaacyo || [],
-    recommendations: result.talooyinka || result.recommendations || []
+    concerns: result.concerns || [],
+    recommendations: result.talooyinka || []
   };
 };
 const Index = () => {

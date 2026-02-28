@@ -10,12 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Pill, 
-  Apple, 
-  Heart, 
-  Plus, 
-  Trash2, 
+import {
+  Pill,
+  Apple,
+  Heart,
+  Plus,
+  Trash2,
   ArrowLeft,
   Sparkles,
   Droplets,
@@ -299,25 +299,65 @@ const HealthTracker = () => {
     setLoadingInsights(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-health`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-        }
-      );
+      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+      if (!GOOGLE_API_KEY) throw new Error('Google API key not configured');
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze health data');
-      }
+      const dataSummary = {
+        vitamins: vitaminLogs.map(v => ({ name: v.vitamin_name, dosage: v.dosage, date: v.taken_at })),
+        gutHealth: gutHealthLogs.map(g => ({
+          date: g.date,
+          digestion: g.digestion_score,
+          bloating: g.bloating_level,
+          water: g.water_intake_liters,
+          probiotic: g.probiotic_taken,
+          fiber: g.fiber_intake
+        })),
+        bodyHealth: bodyHealthLogs.map(b => ({
+          date: b.date,
+          energy: b.energy_level,
+          sleep: b.sleep_hours,
+          sleepQuality: b.sleep_quality,
+          stress: b.stress_level,
+          exercise: b.exercise_minutes,
+          water: b.water_glasses
+        }))
+      };
 
-      const data = await response.json();
-      setAiAnalysis(data);
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
+MUHIIM: Dhammaan jawaabaha waa inay ku qornaadaan AF-SOOMAALI KELIYA.
+
+XOGTA:
+${JSON.stringify(dataSummary, null, 2)}
+
+Ka jawaab JSON object keliya:
+{
+  "summary": "Somali summary",
+  "insights": [{ "title": "Somali", "description": "Somali", "type": "positive|warning|neutral", "icon": "vitamin|gut|sleep|energy|water|exercise|stress" }],
+  "recommendations": ["Somali recommendations"],
+  "correlations": ["Somali correlations"]
+}`
+            }]
+          }]
+        })
+      });
+
+      if (!response.ok) throw new Error('AI analysis failed');
+
+      const aiResponse = await response.json();
+      const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
+      const result = JSON.parse(jsonMatch?.[1] || jsonMatch?.[0] || aiContent);
+
+      setAiAnalysis(result);
       toast({ title: 'Analysis Complete', description: 'Your health insights are ready!' });
     } catch (error) {
+      console.error('AI Insights Error:', error);
       toast({ title: 'Error', description: 'Failed to analyze health data', variant: 'destructive' });
     } finally {
       setLoadingInsights(false);
@@ -348,7 +388,7 @@ const HealthTracker = () => {
   return (
     <div className="min-h-screen grain">
       <div className="hero-glow w-[500px] h-[500px] -top-[250px] left-1/2 -translate-x-1/2" />
-      
+
       {/* Header */}
       <header className="sticky top-0 z-50 glass border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -419,7 +459,7 @@ const HealthTracker = () => {
                 <Pill className="w-5 h-5 text-primary" />
                 Log Vitamin Intake (Diiwaan Geli Fiitaamiinkaaga)
               </h3>
-              
+
               <div className="flex flex-wrap gap-2 mb-4">
                 {commonVitamins.map((vitamin) => (
                   <button
@@ -915,7 +955,7 @@ const HealthTracker = () => {
           <TabsContent value="insights" className="space-y-6 animate-fadeIn">
             <div className="analysis-card">
               <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                     <Brain className="w-5 h-5 text-primary" />
                   </div>
