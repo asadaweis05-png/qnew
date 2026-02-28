@@ -2210,3 +2210,38 @@ ul {
         transform: none;
     }
 }
+
+/* Ad Optimization */
+.ad-container {
+    margin: 60px auto;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    max-width: 1200px;
+    z-index: 1;
+}
+
+.ad-container::before {
+    content: 'Advertisement';
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .ad-container {
+        margin: 40px auto;
+        min-height: 50px;
+    }
+}
