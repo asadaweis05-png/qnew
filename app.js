@@ -345,12 +345,15 @@ window.openWaitlistModal = function (courseId, fallbackTitle) {
     if (course) {
         titleEl.textContent = course.title;
         idInput.value = course.id;
+        idInput.dataset.courseName = course.title;
     } else if (fallbackTitle) {
         titleEl.textContent = fallbackTitle;
-        idInput.value = 'static_course';
+        idInput.value = 'static';
+        idInput.dataset.courseName = fallbackTitle;
     } else {
         titleEl.textContent = 'Our AI Courses';
         idInput.value = 'unknown';
+        idInput.dataset.courseName = 'Unknown AI Course';
     }
 
     modal.classList.add('active');
@@ -364,7 +367,9 @@ function initWaitlistForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('waitlistSubmit');
-        const courseId = document.getElementById('waitlistCourseId').value;
+        const idInput = document.getElementById('waitlistCourseId');
+        const courseId = idInput.value;
+        const courseName = idInput.dataset.courseName;
         const name = document.getElementById('waitlistName').value;
         const email = document.getElementById('waitlistEmail').value;
 
@@ -372,9 +377,17 @@ function initWaitlistForm() {
         submitBtn.querySelector('span').textContent = 'Diridda... / Sending...';
 
         try {
+            // Only set course_id if it's a valid ID (not 'static' or 'unknown')
+            const dbCourseId = (courseId === 'static' || courseId === 'unknown') ? null : courseId;
+
             const { error } = await supabaseClient
                 .from('course_waitlist')
-                .insert([{ course_id: courseId, name: name, email: email }]);
+                .insert([{
+                    course_id: dbCourseId,
+                    course_name: courseName,
+                    name: name,
+                    email: email
+                }]);
 
             if (error) throw error;
 
