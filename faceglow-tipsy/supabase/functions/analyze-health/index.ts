@@ -96,7 +96,7 @@ serve(async (req) => {
       }))
     };
 
-    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY') || 'AIzaSyCC7qSF7ed7kLfRNkumv2hENUxvX3vvn4s';
     if (!GOOGLE_API_KEY) {
       console.error('GOOGLE_API_KEY is not configured');
       return new Response(JSON.stringify({ error: 'Google AI API key is not configured. Please add it to Supabase secrets.' }), {
@@ -107,7 +107,7 @@ serve(async (req) => {
 
     console.log('Calling Gemini AI for health analysis...');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

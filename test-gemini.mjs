@@ -1,5 +1,5 @@
 const apiKey = 'AIzaSyCC7qSF7ed7kLfRNkumv2hENUxvX3vvn4s';
-const models = ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-flash-latest'];
+const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
 const versions = ['v1', 'v1beta'];
 
 async function verify(version, model) {

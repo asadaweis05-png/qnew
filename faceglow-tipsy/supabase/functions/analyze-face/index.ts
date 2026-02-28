@@ -20,7 +20,7 @@ serve(async (req) => {
       );
     }
 
-    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY') || 'AIzaSyCC7qSF7ed7kLfRNkumv2hENUxvX3vvn4s';
     if (!GOOGLE_API_KEY) {
       console.error('GOOGLE_API_KEY is not configured');
       return new Response(
@@ -35,8 +35,7 @@ serve(async (req) => {
     const base64Data = imageBase64.split(',')[1] || imageBase64;
     const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-    // Call Google Gemini API directly
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

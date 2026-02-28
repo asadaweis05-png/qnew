@@ -37,7 +37,7 @@ async function initData() {
 }
 
 async function fetchData(table, stateKey) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from(table)
         .select('*')
         .order('created_at', { ascending: false });
