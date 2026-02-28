@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/faceglow/(.*)",
+      "destination": "/faceglow/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
