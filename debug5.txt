@@ -1,0 +1,1 @@
+a:([^;]+);/))==null?void 0:s[1])||"image/jpeg",o="AIzaSyCcQk6281y1Wju4VdLpC1avhYtz-GVLn8o";console.log("Analyzing face with Direct Gemini API from Frontend...");try{const w=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${o}`,{method:"POST",
