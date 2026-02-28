@@ -1,11 +1,17 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/faceglow/(.*)",
-      "destination": "/faceglow/$1"
+      "source": "/faceglow",
+      "destination": "/faceglow/index.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/faceglow/((?!assets/|favicon.png|og-image.png).*)",
+      "destination": "/faceglow/index.html"
+    },
+    {
+      "source": "/((?!faceglow|admin.html|supabase.js|app.js|index.css|images/|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]
