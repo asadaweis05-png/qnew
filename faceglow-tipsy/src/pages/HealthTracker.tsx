@@ -299,7 +299,7 @@ const HealthTracker = () => {
     setLoadingInsights(true);
 
     try {
-      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyAdMGSoftp-VMC2BWVSWhg-ZxYLETMP6kk';
+      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyBKKA_YTgouO8c7BgFw1_TJUycaO7AfE08';
       if (!GOOGLE_API_KEY) {
         console.error('API Key Missing in HealthTracker');
         throw new Error('Google API key not configured');

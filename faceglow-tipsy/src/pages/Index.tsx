@@ -25,7 +25,7 @@ const analyzeImage = async (file: File) => {
   const base64Data = imageBase64.split(',')[1] || imageBase64;
   const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyAdMGSoftp-VMC2BWVSWhg-ZxYLETMP6kk';
+  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyBKKA_YTgouO8c7BgFw1_TJUycaO7AfE08';
 
   if (!GOOGLE_API_KEY) {
     console.error('API Key Missing');
