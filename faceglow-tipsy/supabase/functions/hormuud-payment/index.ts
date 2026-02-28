@@ -28,12 +28,12 @@ serve(async (req) => {
 
     // Generate unique transaction reference
     const transactionRef = `RFX${Date.now()}`;
-    
+
     let paymentSuccess = false;
     let paymentMessage = '';
 
     console.log('Processing live payment');
-    
+
     // Get credentials from environment variables for security
     const merchantUid = Deno.env.get('HORMUUD_MERCHANT_ID');
     const apiUserId = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
@@ -42,7 +42,7 @@ serve(async (req) => {
     if (!merchantUid || !apiUserId || !apiKey) {
       throw new Error('Payment gateway credentials not configured');
     }
-    
+
     const hormuudPayload = {
       schemaVersion: "1.0",
       requestId: transactionRef,
@@ -93,6 +93,21 @@ serve(async (req) => {
     }
 
     if (paymentSuccess) {
+      // Update user credits for unlimited uploads
+      const { error: creditsError } = await supabase
+        .from('user_credits')
+        .update({
+          has_paid: true,
+          upload_count: 0,
+          subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        })
+        .eq('user_id', userId);
+
+      if (creditsError) {
+        console.error('Error updating credits:', creditsError);
+        // Don't throw here as the payment was successful, just log it
+      }
+
       // Create membership record
       const { error: membershipError } = await supabase
         .from('community_members')
@@ -105,10 +120,10 @@ serve(async (req) => {
 
       if (membershipError) {
         console.error('Error creating membership:', membershipError);
-        throw membershipError;
+        // Don't throw here as the payment was successful, just log it
       }
 
-      console.log('Membership created successfully');
+      console.log('Credits and membership updated successfully');
 
       return new Response(
         JSON.stringify({

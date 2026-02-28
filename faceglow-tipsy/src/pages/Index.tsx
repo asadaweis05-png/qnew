@@ -132,10 +132,25 @@ const Index = () => {
       setUploadCount(0);
       setHasPaid(false);
     } else {
-      const lastReset = new Date(data.last_reset_at);
       const now = new Date();
+
+      // Check if subscription has expired
+      let isSubscriptionActive = data.has_paid;
+      if (data.has_paid && data.subscription_expires_at) {
+        const expiresAt = new Date(data.subscription_expires_at);
+        if (now > expiresAt) {
+          isSubscriptionActive = false;
+          // Update the database to reflect expired status
+          await supabase.from('user_credits').update({
+            has_paid: false
+          }).eq('user_id', user.id);
+        }
+      }
+
+      const lastReset = new Date(data.last_reset_at);
       const hoursSinceReset = (now.getTime() - lastReset.getTime()) / (1000 * 60 * 60);
-      if (hoursSinceReset >= 24 && !data.has_paid) {
+
+      if (hoursSinceReset >= 24 && !isSubscriptionActive) {
         await supabase.from('user_credits').update({
           upload_count: 0,
           last_reset_at: now.toISOString()
@@ -144,7 +159,7 @@ const Index = () => {
       } else {
         setUploadCount(data.upload_count);
       }
-      setHasPaid(data.has_paid);
+      setHasPaid(isSubscriptionActive);
     }
   };
   const handleImageSelect = async (file: File) => {
@@ -157,7 +172,7 @@ const Index = () => {
       navigate('/auth');
       return;
     }
-    if (!hasPaid && uploadCount >= 1) {
+    if (!hasPaid && uploadCount >= 2) {
       setShowPaymentDialog(true);
       return;
     }
@@ -436,7 +451,7 @@ const Index = () => {
                 Unlimited uploads active
               </div> : <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm">
                 <span className="text-muted-foreground">Free uploads:</span>
-                <span className="font-semibold text-foreground">{Math.max(0, 1 - uploadCount)} / 1</span>
+                <span className="font-semibold text-foreground">{Math.max(0, 2 - uploadCount)} / 2</span>
               </div>}
             </div>}
           </section>
@@ -516,7 +531,7 @@ const Index = () => {
         <DialogHeader>
           <DialogTitle className="font-serif text-xl">Unlock Unlimited Access</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            You've used your 2 free uploads. Upgrade for unlimited scans and community access.
+            You've used your 2 free uploads. Upgrade for 1 month of unlimited scans.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
