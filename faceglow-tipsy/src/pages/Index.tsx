@@ -25,7 +25,7 @@ const analyzeImage = async (file: File) => {
   const base64Data = imageBase64.split(',')[1] || imageBase64;
   const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyBKKA_YTgouO8c7BgFw1_TJUycaO7AfE08';
+  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
   if (!GOOGLE_API_KEY) {
     console.error('API Key Missing');
@@ -35,7 +35,7 @@ const analyzeImage = async (file: File) => {
   console.log('Analyzing face with Direct Gemini API from Frontend...');
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

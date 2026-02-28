@@ -299,7 +299,7 @@ const HealthTracker = () => {
     setLoadingInsights(true);
 
     try {
-      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyBKKA_YTgouO8c7BgFw1_TJUycaO7AfE08';
+      const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
       if (!GOOGLE_API_KEY) {
         console.error('API Key Missing in HealthTracker');
         throw new Error('Google API key not configured');
@@ -328,7 +328,7 @@ const HealthTracker = () => {
 
       console.log('Fetching AI Insights with Direct Gemini API...');
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
