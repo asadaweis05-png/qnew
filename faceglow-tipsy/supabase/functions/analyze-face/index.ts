@@ -20,7 +20,7 @@ serve(async (req) => {
       );
     }
 
-    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY') || 'AIzaSyAUX8wdueGfw9xIZiWG_-T5YLXrx0503bk';
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
     if (!GOOGLE_API_KEY) {
       console.error('GOOGLE_API_KEY is not configured');
       return new Response(
