@@ -19,7 +19,7 @@
       "destination": "/somali-speak-buddy/index.html"
     },
     {
-      "source": "/((?!faceglow|somali-speak-buddy|admin.html|supabase.js|app.js|index.css|images|favicon.ico|assets).*)",
+      "source": "/((?!faceglow|somali-speak-buddy|admin.html|supabase.js|app.js|index.css|images/|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]
