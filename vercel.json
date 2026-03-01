@@ -3,8 +3,16 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/faceglow",
+      "destination": "/faceglow/index.html"
+    },
+    {
       "source": "/faceglow/((?!assets/|favicon.png|og-image.png|placeholder.svg).*)",
       "destination": "/faceglow/index.html"
+    },
+    {
+      "source": "/somali-speak-buddy",
+      "destination": "/somali-speak-buddy/index.html"
     },
     {
       "source": "/somali-speak-buddy/((?!assets/|favicon.ico|placeholder.svg|robots.txt|sw.js).*)",
