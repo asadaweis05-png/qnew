@@ -260,7 +260,7 @@ async function loadAdminData() {
         if (errCourses) throw errCourses;
         allCourses = courses || [];
 
-        const coursesGrid = document.querySelector('.courses-grid');
+        const coursesGrid = document.getElementById('courses-grid');
         if (coursesGrid && allCourses.length > 0) {
             let coursesHTML = '';
             allCourses.forEach(course => {
