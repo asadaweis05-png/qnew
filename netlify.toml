@@ -3,12 +3,12 @@
 
 [[redirects]]
   from = "/faceglow/*"
-  to = "/faceglow/:splat"
+  to = "/faceglow/index.html"
   status = 200
 
 [[redirects]]
   from = "/somali-speak-buddy/*"
-  to = "/somali-speak-buddy/:splat"
+  to = "/somali-speak-buddy/index.html"
   status = 200
 
 [[redirects]]
