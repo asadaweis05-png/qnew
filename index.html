@@ -466,12 +466,51 @@
         </div>
     </div>
 
+    <!-- ======= AUTH MODAL ======= -->
+    <div id="authModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close" aria-label="Close Modal">&times;</button>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" data-auth-mode="login">Login</button>
+                <button class="auth-tab-btn" data-auth-mode="signup">Sign Up</button>
+            </div>
+
+            <form id="authForm" class="modal-form">
+                <h2 id="authModalTitle">Welcome Back</h2>
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <label for="authName">Full Name</label>
+                    <input type="text" id="authName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="authEmail">Email Address</label>
+                    <input type="email" id="authEmail" placeholder="example@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary auth-submit" id="authSubmit">
+                    <span>Login</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- ======= COURSE PLAYER MODAL ======= -->
 
     <div id="coursePlayerModal" class="modal">
         <div class="modal-backdrop"></div>
         <div class="modal-content player-modal-content">
-            <button class="modal-close" aria-label="Close Modal">&times;</button>
+            <div class="player-header">
+                <button class="btn-back-courses" onclick="closeAllModals()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Courses
+                </button>
+                <button class="modal-close" aria-label="Close Modal">&times;</button>
+            </div>
             <div class="player-layout">
                 <div class="player-main">
                     <div class="video-container">

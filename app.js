@@ -408,6 +408,14 @@ function initWaitlistForm() {
 
 // ===== COURSE PLAYER LOGIC (Reserved for later) =====
 window.openCoursePlayer = async function (courseId) {
+    // 1. Enforce Login
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        showToast('Fadlan marka hore gal / Please login to watch courses', 'warning');
+        openAuthModal();
+        return;
+    }
+
     let course = allCourses.find(c => c.id === courseId);
 
     // Support for the manual static course
@@ -496,4 +504,102 @@ function initMagneticButtons() { }
 function initTypewriter() { }
 function initHeroParallax() { }
 function initActiveNavHighlight() { }
-function initSupabaseAuth() { }
+function initSupabaseAuth() {
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    const navSignupBtn = document.getElementById('navSignupBtn');
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+    const authForm = document.getElementById('authForm');
+    const authTabs = document.querySelectorAll('.auth-tab-btn');
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+    if (navLoginBtn) navLoginBtn.onclick = () => openAuthModal('login');
+    if (navSignupBtn) navSignupBtn.onclick = () => openAuthModal('signup');
+    if (mobileLoginBtn) mobileLoginBtn.onclick = () => openAuthModal('login');
+    if (mobileSignupBtn) mobileSignupBtn.onclick = () => openAuthModal('signup');
+
+    // Handle Auth Tabs
+    authTabs.forEach(btn => {
+        btn.onclick = () => {
+            authTabs.forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.dataset.authMode;
+            document.getElementById('authModalTitle').textContent = mode === 'login' ? 'Welcome Back' : 'Create Account';
+            document.getElementById('nameGroup').style.display = mode === 'login' ? 'none' : 'block';
+            document.getElementById('authSubmit').querySelector('span').textContent = mode === 'login' ? 'Login' : 'Sign Up';
+        };
+    });
+
+    // Handle Form Submission
+    if (authForm) {
+        authForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const mode = document.querySelector('.auth-tab-btn.active').dataset.authMode;
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
+            const submitBtn = document.getElementById('authSubmit');
+
+            submitBtn.disabled = true;
+            submitBtn.querySelector('span').textContent = 'Processing...';
+
+            try {
+                if (mode === 'signup') {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { full_name: name } }
+                    });
+                    if (error) throw error;
+                    showToast('Xisaabta waa la abuuray! Fadlan hubi email-kaaga. / Account created! Please check your email.', 'success');
+                } else {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    showToast('Waad soo gashay! / Welcome back!', 'success');
+                }
+                closeAllModals();
+            } catch (err) {
+                console.error(err);
+                showToast(err.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.querySelector('span').textContent = mode === 'login' ? 'Login' : 'Sign Up';
+            }
+        };
+    }
+
+    // Auth State Observer
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        const user = session?.user;
+        if (user) {
+            if (navLoginBtn) navLoginBtn.style.display = 'none';
+            if (navSignupBtn) navSignupBtn.style.display = 'none';
+            if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+            if (mobileSignupBtn) mobileSignupBtn.style.display = 'none';
+            if (navLogoutBtn) navLogoutBtn.style.display = 'block';
+            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+        } else {
+            if (navLoginBtn) navLoginBtn.style.display = 'block';
+            if (navSignupBtn) navSignupBtn.style.display = 'block';
+            if (mobileLoginBtn) mobileLoginBtn.style.display = 'block';
+            if (mobileSignupBtn) mobileSignupBtn.style.display = 'block';
+            if (navLogoutBtn) navLogoutBtn.style.display = 'none';
+            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+        }
+    });
+
+    // Handle Logout
+    const logoutAction = async (e) => { e.preventDefault(); await supabaseClient.auth.signOut(); showToast('Waad ka baxday. / Logged out.', 'info'); };
+    if (navLogoutBtn) navLogoutBtn.onclick = logoutAction;
+    if (mobileLogoutBtn) mobileLogoutBtn.onclick = logoutAction;
+}
+
+window.openAuthModal = function (mode = 'login') {
+    const modal = document.getElementById('authModal');
+    const tab = document.querySelector(`.auth-tab-btn[data-auth-mode="${mode}"]`);
+    if (tab) tab.click();
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+
