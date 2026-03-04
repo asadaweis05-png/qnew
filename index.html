@@ -42,11 +42,6 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#" class="nav-logo">
-                <svg class="logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path
-                        d="M14 0L17.5 7L25.5 3.5L20 10.5L28 14L20 17.5L25.5 24.5L17.5 21L14 28L10.5 21L2.5 24.5L8 17.5L0 14L8 10.5L2.5 3.5L10.5 7L14 0Z"
-                        fill="#2563eb" />
-                </svg>
                 <span>THE<span class="logo-accent">QNEW</span></span>
             </a>
             <div class="nav-links" id="navLinks">
@@ -214,6 +209,26 @@
                 <a href="#" class="view-all">View All Courses →</a>
             </div>
             <div class="courses-grid" id="courses-grid">
+                <!-- Course 0: New App Build Course -->
+                <div class="course-card reveal" onclick="openWaitlistModal(null, 'How to Build Application')">
+                    <div class="course-img-wrap">
+                        <img src="https://img.youtube.com/vi/XUoyL8z3E2E/maxresdefault.jpg"
+                            alt="How to Build Application" loading="lazy">
+                        <span class="course-badge">New</span>
+                    </div>
+                    <div class="course-body">
+                        <h3 class="course-title">How to Build Application</h3>
+                        <p class="course-desc">Step-by-step guide to building and deploying your first AI-driven
+                            application.</p>
+                        <div class="course-meta">
+                            <div class="course-rating">
+                                <div class="stars" data-rating="5.0"></div>
+                                <span class="rating-num">5.0</span>
+                            </div>
+                            <span class="course-students">1 Lesson</span>
+                        </div>
+                    </div>
+                </div>
                 <!-- Course 1 -->
                 <div class="course-card reveal">
                     <div class="course-img-wrap">
@@ -430,11 +445,6 @@
         <div class="modal-content waitlist-modal-content">
             <button class="modal-close" aria-label="Close Modal">&times;</button>
             <div class="waitlist-brand">
-                <svg class="logo-icon" width="24" height="24" viewBox="0 0 28 28" fill="none">
-                    <path
-                        d="M14 0L17.5 7L25.5 3.5L20 10.5L28 14L20 17.5L25.5 24.5L17.5 21L14 28L10.5 21L2.5 24.5L8 17.5L0 14L8 10.5L2.5 3.5L10.5 7L14 0Z"
-                        fill="#2563eb" />
-                </svg>
                 <span>JOIN THE <span class="logo-accent">WAITLIST</span></span>
             </div>
             <h2 class="waitlist-title" id="waitlistCourseTitle">Course Title</h2>
@@ -490,11 +500,6 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="#" class="nav-logo footer-logo">
-                        <svg class="logo-icon" width="24" height="24" viewBox="0 0 28 28" fill="none">
-                            <path
-                                d="M14 0L17.5 7L25.5 3.5L20 10.5L28 14L20 17.5L25.5 24.5L17.5 21L14 28L10.5 21L2.5 24.5L8 17.5L0 14L8 10.5L2.5 3.5L10.5 7L14 0Z"
-                                fill="#2563eb" />
-                        </svg>
                         <span>THE<span class="logo-accent">QNEW</span></span>
                     </a>
                     <p class="footer-tagline">Empowering the world with AI<br>knowledge, one course at a time.</p>
