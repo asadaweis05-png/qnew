@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | THEQNEW</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .about-hero {
+            padding: 150px 0 100px;
+            background: radial-gradient(circle at top right, rgba(0, 229, 255, 0.1), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.1), transparent 40%);
+            text-align: center;
+        }
+
+        .about-content {
+            padding-bottom: 100px;
+        }
+
+        .founder-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+            margin-top: -50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .founder-img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .founder-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .founder-tag {
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .founder-bio {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-num {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 992px) {
+            .founder-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .founder-img {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar active" style="background: rgba(10, 11, 20, 0.95); backdrop-filter: blur(15px);">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span>THE<span class="logo-accent">QNEW</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#courses">Courses</a>
+                <a href="about.html" class="active" style="color: var(--accent);">About Us</a>
+                <a href="index.html#marketplace">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="about-hero">
+        <div class="container">
+            <h1 class="section-title" style="font-size: 4rem;">Our Story</h1>
+            <p class="section-subtitle">Bridging the technology gap for the Somali generation.</p>
+        </div>
+    </section>
+
+    <section class="about-content">
+        <div class="container">
+            <div class="founder-card reveal">
+                <div class="founder-img-wrap">
+                    <img src="https://image2url.com/r2/default/images/1772234474682-6bca43ba-ee1c-4b97-9e6a-7a9ba491640a.png"
+                        alt="Engineer Buzuri" class="founder-img">
+                </div>
+                <div class="founder-info">
+                    <span class="founder-tag">The Visionary</span>
+                    <h2>Engineer Buzuri</h2>
+                    <div class="founder-bio">
+                        <p>Engineer Buzuri is a distinguished Software Engineer, AI Expert, and Tech Mentor who has been
+                            at the forefront of the Somali tech revolution since 2021. At just 23 years old, he has
+                            built a reputation for bridging the gap between complex technology and practical
+                            implementation.</p>
+                        <br>
+                        <p>Through <strong>Hanasho AI</strong>, his mission is clear: to empower the Somali youth by
+                            providing them with world-class education in AI, coding, and digital entrepreneurship. He
+                            believes that technology is the greatest equalizer and that by mastering these tools, our
+                            community can compete on a global stage.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-num">2021</span>
+                            <span class="stat-label">Community Built Since</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num">50k+</span>
+                            <span class="stat-label">Students Guided</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num">AI First</span>
+                            <span class="stat-label">Our Philosophy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border: none;">
+                <p>&copy; 2026 THEQNEW. Made with love by <strong>Hanasho AI</strong></p>
+                <div style="margin-top: 15px;">
+                    <a href="https://t.me/HANASHO_COMPANY" target="_blank"
+                        style="color: var(--text-secondary); margin-right: 20px;">Telegram</a>
+                    <a href="https://buzuri.com" target="_blank" style="color: var(--text-secondary);">Founder Site</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // Trigger reveal manually for this page
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(r => r.classList.add('visible'));
+        });
+    </script>
+</body>
+
+</html>
