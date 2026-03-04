@@ -431,6 +431,18 @@ window.openCoursePlayer = async function (courseId) {
 
     playlistContainer.innerHTML = '<div class="loader-small">Loading lessons...</div>';
 
+    // If it's the static course, show the default lesson immediately and don't fetch from DB
+    if (courseId === 'static_app_build') {
+        playlistContainer.innerHTML = `
+            <div class="playlist-item active" onclick="playLesson('${course.video_id}', 'Introduction')">
+                <span class="playlist-item-num">1</span>
+                <span class="playlist-item-title">Main Introduction</span>
+            </div>
+        `;
+        playLesson(course.video_id, 'Introduction');
+        return;
+    }
+
     try {
         const { data: lessons, error } = await supabaseClient
             .from('course_lessons')
