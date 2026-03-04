@@ -212,9 +212,11 @@ function initCardInteractions() {
         if (!card.hasAttribute('onclick')) {
             card.style.cursor = 'pointer';
             card.addEventListener('click', () => {
+                // If it's a static card without a specific ID, we'll try to find a video ID or show a message
                 const title = card.querySelector('.course-title')?.textContent || 'AI Course';
-                // For static cards, we can show waitlist with just the title
-                openWaitlistModal(null, title);
+                showToast(`Opening: ${title}`, 'info');
+                // For static cards in index.html, we'll need to manually check for video IDs if possible
+                // but better to just convert them to openCoursePlayer in the HTML
             });
         }
     });
@@ -265,7 +267,7 @@ async function loadAdminData() {
             let coursesHTML = '';
             allCourses.forEach(course => {
                 coursesHTML += `
-                <div class="course-card reveal" onclick="openWaitlistModal('${course.id}')" style="cursor:pointer;">
+                <div class="course-card reveal" onclick="openCoursePlayer('${course.id}')" style="cursor:pointer;">
                     <span class="course-badge">Course</span>
                     <div class="course-img-wrap">
                         <img src="${course.thumbnail_url || course.thumbnailUrl}" alt="${course.title}" loading="lazy">
@@ -406,7 +408,17 @@ function initWaitlistForm() {
 
 // ===== COURSE PLAYER LOGIC (Reserved for later) =====
 window.openCoursePlayer = async function (courseId) {
-    const course = allCourses.find(c => c.id === courseId);
+    let course = allCourses.find(c => c.id === courseId);
+
+    // Support for the manual static course
+    if (courseId === 'static_app_build' && !course) {
+        course = {
+            id: 'static_app_build',
+            title: 'How to Build Application',
+            video_id: 'XUoyL8z3E2E'
+        };
+    }
+
     if (!course) return;
 
     const modal = document.getElementById('coursePlayerModal');
