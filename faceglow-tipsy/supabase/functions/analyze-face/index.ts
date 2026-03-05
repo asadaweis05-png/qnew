@@ -46,53 +46,40 @@ serve(async (req) => {
             {
               text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
 
-CRITICAL: You MUST analyze the actual image provided. Look at:
-- Visible shine/oiliness on forehead, nose, chin (T-zone)
-- Dry patches, flakiness, or rough texture
-- Pore size and visibility
-- Skin texture and tone
-- Any acne, blemishes, or spots
-- Under-eye area condition
-- Fine lines or wrinkles
+CRITICAL: You MUST analyze the actual image provided. Look at visible shine, oiliness, dry patches, pores, acne, wrinkles, and dark circles.
 
-Respond with ONLY a JSON object (no markdown, no code blocks) with this exact structure:
-
+Respond with ONLY a JSON object with this exact structure:
 {
   "skinHealth": {
-    "qoyaan": <0-100 hydration level based on visible moisture>,
-    "nadiifnimo": <0-100 cleanliness/clarity>,
-    "dhadhanka": <0-100 skin texture smoothness>,
-    "acne": <0-100 where 100=no acne, 0=severe acne>,
-    "wrinkles": <0-100 where 100=no wrinkles, 0=many wrinkles>,
-    "darkCircles": <0-100 where 100=no dark circles, 0=severe dark circles>
+    "qoyaan": number,
+    "nadiifnimo": number,
+    "dhadhanka": number,
+    "acne": number,
+    "wrinkles": number,
+    "darkCircles": number
   },
   "skinType": {
-    "type": "<EXACT: 'oily' OR 'dry' OR 'combination' OR 'normal'>",
-    "confidence": <50-100 how confident you are>,
-    "indicators": ["<list 2-4 specific visual signs you detected>"],
-    "tZone": "<describe T-zone condition: oily/normal/dry>",
-    "cheeks": "<describe cheek area condition: oily/normal/dry>"
+    "type": "oily" | "dry" | "combination" | "normal",
+    "confidence": number,
+    "indicators": string[],
+    "tZone": string,
+    "cheeks": string
   },
-  "talooyinka": [
-    "<6-8 specific skincare recommendations in Somali based on detected skin type>",
-    "<If oily: recommend oil-control, clay masks, lightweight moisturizers>",
-    "<If dry: recommend hydrating serums, rich moisturizers, avoid harsh cleansers>",
-    "<If combination: recommend zone-specific care>"
-  ],
+  "talooyinka": string[],
   "features": {
-    "midabMaqaarka": "<skin tone and undertone description in Somali>",
-    "daQiyaas": <estimated age number>,
-    "nooMaqaarka": "<skin type in Somali: Maqaar saliid leh (oily) / Maqaar qallalan (dry) / Maqaar isku dhafan (combination) / Maqaar caadi ah (normal)>"
+    "midabMaqaarka": string,
+    "daQiyaas": number,
+    "nooMaqaarka": string
   },
   "detailedAnalysis": {
-    "oilLevel": "<none/mild/moderate/high - describe visible shine>",
-    "dryness": "<none/mild/moderate/severe - describe dry patches>",
-    "poreSize": "<small/medium/large/enlarged>",
-    "overallCondition": "<2-3 sentence summary of skin condition in Somali>"
+    "oilLevel": string,
+    "dryness": string,
+    "poreSize": string,
+    "overallCondition": string
   }
 }
 
-Be honest and specific. Your analysis must match what you actually see in the image.`
+Important: Use Somali for "talooyinka", "features", and "detailedAnalysis.overallCondition".`
             },
             {
               inline_data: {
@@ -101,7 +88,32 @@ Be honest and specific. Your analysis must match what you actually see in the im
               }
             }
           ]
-        }]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          topP: 1,
+          topK: 32,
+          maxOutputTokens: 2048,
+          responseMimeType: "application/json",
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_NONE"
+          }
+        ]
       })
     });
 
