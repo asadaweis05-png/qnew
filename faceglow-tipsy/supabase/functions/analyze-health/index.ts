@@ -107,15 +107,8 @@ serve(async (req) => {
 
     console.log('Calling Gemini AI for health analysis...');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
+    // Prepare prompt to ensure JSON response without markdown
+    const prompt = `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
 
 MUHIIM: Dhammaan jawaabaha waa inay ku qornaadaan AF-SOOMAALI KELIYA.
 
@@ -129,6 +122,8 @@ Falanqee qaababka iyo isku xirnaanshaha xogta. Raadi:
 4. Saamaynta cabidda biyaha ee dheefshiidka
 5. Saamaynta jimicsiga ee hurdada iyo tamarta
 6. Qaababka heerarka walbahaarka
+
+CRITICAL: Respond with ONLY the raw JSON object. Do NOT include markdown code blocks like \`\`\`json. Do NOT include any text before or after the JSON.
 
 Ka jawaab JSON object keliya (markdown la'aan):
 {
@@ -150,7 +145,17 @@ Ka jawaab JSON object keliya (markdown la'aan):
   "correlations": [
     "<isku xirnaansho la helay, tusaale: 'Cabidda biyaha badan waxay la xiriirtaa dheefshiid wanaagsan' - AF-SOOMAALI>"
   ]
-}`
+}`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
           }]
         }]
       })
@@ -173,9 +178,24 @@ Ka jawaab JSON object keliya (markdown la'aan):
 
     let result;
     try {
-      const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch?.[1] || jsonMatch?.[0] || aiContent;
+      const sanitizedContent = aiContent.trim();
+      const jsonMatch = sanitizedContent.match(/```json\s*([\s\S]*?)\s*```/) ||
+        sanitizedContent.match(/```\s*([\s\S]*?)\s*```/) ||
+        sanitizedContent.match(/\{[\s\S]*\}/);
+
+      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : sanitizedContent;
+      console.log('Attempting to parse health AI response...');
       result = JSON.parse(jsonStr);
+
+      // Normalize result: ensure expected keys exist
+      const normalized = {
+        summary: result.summary || result.guud_mar || "Falanqaynta waa la dhammeeyay.",
+        insights: result.insights || result.talooyin || [],
+        recommendations: result.recommendations || result.talo_soo_jeedin || [],
+        correlations: result.correlations || result.isku_xirnaansho || []
+      };
+      result = normalized;
+      console.log('Successfully parsed and normalized AI health analysis');
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
       result = {

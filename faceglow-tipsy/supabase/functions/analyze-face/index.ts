@@ -48,7 +48,9 @@ serve(async (req) => {
 
 CRITICAL: You MUST analyze the actual image provided. Look at visible shine, oiliness, dry patches, pores, acne, wrinkles, and dark circles.
 
-Respond with ONLY a JSON object with this exact structure:
+CRITICAL: Respond with ONLY the raw JSON object. Do NOT include markdown code blocks like \`\`\`json. Do NOT include any text before or after the JSON.
+          
+Respond with this exact structure:
 {
   "skinHealth": {
     "qoyaan": number,
@@ -151,32 +153,50 @@ Important: Use Somali for "talooyinka", "features", and "detailedAnalysis.overal
     // Try to parse JSON from the AI response with better robustness
     let result;
     try {
-      // 1. Try direct match for JSON blocks
-      const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) ||
-        aiContent.match(/\{[\s\S]*\}/);
+      // Cleanup common AI garbage (markdown bolding, trailing comments, etc)
+      let jsonStr = aiContent.trim();
 
-      let jsonStr = aiContent;
+      // Remove markdown code blocks if present
+      const jsonMatch = jsonStr.match(/```json\s*([\s\S]*?)\s*```/) ||
+        jsonStr.match(/```\s*([\s\S]*?)\s*```/) ||
+        jsonStr.match(/\{[\s\S]*\}/);
+
       if (jsonMatch) {
         jsonStr = jsonMatch[1] || jsonMatch[0];
       }
 
-      // Cleanup common AI garbage (markdown bolding, trailing comments, etc)
-      jsonStr = jsonStr.trim();
-
+      console.log('Attempting to parse JSON string of length:', jsonStr.length);
       result = JSON.parse(jsonStr);
 
-      // Validate required fields with defaults to prevent crashes
-      if (!result.skinHealth) result.skinHealth = { qoyaan: 70, nadiifnimo: 70, dhadhanka: 70, acne: 100, wrinkles: 100, darkCircles: 100 };
-      if (!result.talooyinka) result.talooyinka = ["Fadlan sii wad raadraaca maqaarkaaga"];
+      // Normalize result: Map Somali keys back to English if Gemini translated them
+      // This is a safety measure in case Gemini ignores instructions and translates keys
+      const normalizedResult: any = {
+        skinHealth: result.skinHealth || result.caafimaadkaMaqaarka || {},
+        skinType: result.skinType || result.noocaMaqaarka || {},
+        talooyinka: result.talooyinka || result.recommendations || [],
+        features: result.features || result.astaamaha || {},
+        detailedAnalysis: result.detailedAnalysis || result.falanqaynFaahfaahsan || {}
+      };
 
-      console.log('Successfully parsed AI analysis');
+      // Fill in nested defaults
+      if (!normalizedResult.skinHealth.qoyaan) normalizedResult.skinHealth.qoyaan = result.skinHealth?.hydration || 70;
+      if (!normalizedResult.skinHealth.nadiifnimo) normalizedResult.skinHealth.nadiifnimo = result.skinHealth?.clarity || 70;
+      if (!normalizedResult.skinHealth.dhadhanka) normalizedResult.skinHealth.dhadhanka = result.skinHealth?.texture || 70;
+
+      // Ensure talooyinka is at least an array
+      if (!Array.isArray(normalizedResult.talooyinka)) {
+        normalizedResult.talooyinka = ["Fadlan sii wad raadraaca maqaarkaaga si aad u hesho xog dheeraad ah."];
+      }
+
+      result = normalizedResult;
+      console.log('Successfully parsed and normalized AI analysis');
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
-      console.error('Raw content attempted to parse:', aiContent);
+      console.error('Raw content attempted to parse:', aiContent.substring(0, 500));
 
       return new Response(
         JSON.stringify({
-          error: 'Could not process the analysis results.',
+          error: 'Maqaalku ma uusan soo bixin qaab sax ah.',
           details: 'The AI returned an invalid format. Please try again.',
           raw: aiContent.substring(0, 200)
         }),
