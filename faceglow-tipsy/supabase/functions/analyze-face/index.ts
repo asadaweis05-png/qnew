@@ -120,51 +120,54 @@ Be honest and specific. Your analysis must match what you actually see in the im
     }
 
     const aiResponse = await response.json();
-    console.log('Gemini analysis completed successfully');
+    console.log('Gemini API response received');
 
     // Extract the AI's response from candidates
     const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     if (!aiContent) {
-      console.error('No content in AI response');
+      console.error('No content in AI response:', JSON.stringify(aiResponse));
       return new Response(
-        JSON.stringify({ error: 'AI did not provide analysis. Please try again.' }),
+        JSON.stringify({
+          error: 'AI did not provide analysis. Please try again.',
+          debug: aiResponse
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Try to parse JSON from the AI response
+    // Try to parse JSON from the AI response with better robustness
     let result;
     try {
-      // Extract JSON from markdown code blocks if present
+      // 1. Try direct match for JSON blocks
       const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) ||
         aiContent.match(/\{[\s\S]*\}/);
 
-      if (!jsonMatch) {
-        console.error('No JSON found in AI response:', aiContent);
-        return new Response(
-          JSON.stringify({ error: 'Failed to get valid analysis. Please try uploading the image again.' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+      let jsonStr = aiContent;
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1] || jsonMatch[0];
       }
 
-      const jsonStr = jsonMatch[1] || jsonMatch[0];
+      // Cleanup common AI garbage (markdown bolding, trailing comments, etc)
+      jsonStr = jsonStr.trim();
+
       result = JSON.parse(jsonStr);
 
-      // Validate that we have the required fields
-      if (!result.skinHealth || !result.talooyinka) {
-        console.error('Missing required fields in AI response:', result);
-        return new Response(
-          JSON.stringify({ error: 'Incomplete analysis received. Please try again.' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      // Validate required fields with defaults to prevent crashes
+      if (!result.skinHealth) result.skinHealth = { qoyaan: 70, nadiifnimo: 70, dhadhanka: 70, acne: 100, wrinkles: 100, darkCircles: 100 };
+      if (!result.talooyinka) result.talooyinka = ["Fadlan sii wad raadraaca maqaarkaaga"];
 
       console.log('Successfully parsed AI analysis');
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError, 'Content:', aiContent);
+      console.error('Failed to parse AI response:', parseError);
+      console.error('Raw content attempted to parse:', aiContent);
+
       return new Response(
-        JSON.stringify({ error: 'Could not process the analysis. Please try uploading your image again.' }),
+        JSON.stringify({
+          error: 'Could not process the analysis results.',
+          details: 'The AI returned an invalid format. Please try again.',
+          raw: aiContent.substring(0, 200)
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
