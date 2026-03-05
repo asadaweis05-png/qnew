@@ -172,6 +172,14 @@ Ka jawaab JSON object keliya (markdown la'aan):
     }
 
     const aiResponse = await response.json();
+    console.log('Gemini AI health response status:', response.status);
+
+    if (aiResponse.error) {
+      console.error('Gemini Health API Error Detail:', JSON.stringify(aiResponse.error, null, 2));
+      throw new Error(`AI Gateway error: ${aiResponse.error.message}`);
+    }
+
+    // Extract the AI's response from candidates
     const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     console.log('AI analysis completed');

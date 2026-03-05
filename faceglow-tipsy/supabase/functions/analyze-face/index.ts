@@ -134,7 +134,18 @@ Important: Use Somali for "talooyinka", "features", and "detailedAnalysis.overal
     }
 
     const aiResponse = await response.json();
-    console.log('Gemini API response received');
+    console.log('Gemini API response status:', response.status);
+
+    if (aiResponse.error) {
+      console.error('Gemini API Error Detail:', JSON.stringify(aiResponse.error, null, 2));
+      return new Response(
+        JSON.stringify({
+          error: 'AI adeegga wuxuu soo celiyay qalad.',
+          details: aiResponse.error.message
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Extract the AI's response from candidates
     const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';

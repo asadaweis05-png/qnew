@@ -1,3 +1,5 @@
-/faceglow/*           /faceglow/index.html           200
-/somali-speak-buddy/*  /somali-speak-buddy/index.html  200
-/*                     /index.html                    200
+/faceglow/*             /faceglow/index.html           200
+/somali-speak-buddy/*    /somali-speak-buddy/index.html  200
+/somali-buddy-speak/*    /somali-speak-buddy/index.html  200
+/somali-buddy/*          /somali-speak-buddy/index.html  200
+/*                       /index.html                    200
