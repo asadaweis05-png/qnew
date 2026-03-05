@@ -35,7 +35,7 @@ serve(async (req) => {
     const base64Data = imageBase64.split(',')[1] || imageBase64;
     const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,8 +110,12 @@ Be honest and specific. Your analysis must match what you actually see in the im
       console.error('Gemini API error:', response.status, errorText);
 
       return new Response(
-        JSON.stringify({ error: 'Failed to analyze face with Gemini API' }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: 'Failed to analyze face with Gemini API',
+          status: response.status,
+          details: errorText.substring(0, 100)
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

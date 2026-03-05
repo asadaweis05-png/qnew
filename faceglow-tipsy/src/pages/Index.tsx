@@ -16,13 +16,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from '@/assets/logo.png';
+
+const compressImage = (base64Str: string, maxWidth = 800, maxHeight = 800): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
+    };
+  });
+};
+
 const analyzeImage = async (file: File) => {
   const reader = new FileReader();
   const base64Promise = new Promise<string>(resolve => {
     reader.onloadend = () => resolve(reader.result as string);
     reader.readAsDataURL(file);
   });
-  const imageBase64 = await base64Promise;
+  const rawBase64 = await base64Promise;
+  const imageBase64 = await compressImage(rawBase64);
 
   console.log('Analyzing face with Supabase Edge Function...');
 

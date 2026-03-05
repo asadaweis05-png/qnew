@@ -23,7 +23,7 @@ serve(async (req) => {
 
         const systemPrompt = `You are a professional translator. Translate the given text from ${fromLanguage} to ${toLanguage}. ONLY provide the translation.`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
