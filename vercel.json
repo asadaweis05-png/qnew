@@ -1,6 +1,4 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/faceglow/assets/:path*",
@@ -24,11 +22,11 @@
     },
     {
       "source": "/somali-buddy-speak/:path*",
-      "destination": "/somali-speak-buddy/index.html"
+      "destination": "/somali-speak-buddy/:path*"
     },
     {
       "source": "/somali-buddy/:path*",
-      "destination": "/somali-speak-buddy/index.html"
+      "destination": "/somali-speak-buddy/:path*"
     }
   ]
 }
