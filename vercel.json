@@ -1,32 +1,36 @@
 {
-  "rewrites": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
     {
-      "source": "/faceglow/assets/:path*",
-      "destination": "/faceglow/assets/:path*"
-    },
-    {
-      "source": "/faceglow/:path*",
-      "destination": "/faceglow/index.html"
-    },
-    {
-      "source": "/somali-speak-buddy/assets/:path*",
-      "destination": "/somali-speak-buddy/assets/:path*"
-    },
-    {
-      "source": "/somali-speak-buddy/sw.js",
-      "destination": "/somali-speak-buddy/sw.js"
-    },
-    {
-      "source": "/somali-speak-buddy/:path*",
-      "destination": "/somali-speak-buddy/index.html"
+      "source": "/somali-buddy-speak",
+      "destination": "/somali-speak-buddy/",
+      "permanent": true
     },
     {
       "source": "/somali-buddy-speak/:path*",
-      "destination": "/somali-speak-buddy/:path*"
+      "destination": "/somali-speak-buddy/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/somali-buddy",
+      "destination": "/somali-speak-buddy/",
+      "permanent": true
     },
     {
       "source": "/somali-buddy/:path*",
-      "destination": "/somali-speak-buddy/:path*"
+      "destination": "/somali-speak-buddy/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/faceglow/((?!assets/|favicon.png|og-image.png|placeholder.svg).*)",
+      "destination": "/faceglow/index.html"
+    },
+    {
+      "source": "/somali-speak-buddy/((?!assets/|favicon.ico|placeholder.svg|robots.txt|sw.js).*)",
+      "destination": "/somali-speak-buddy/index.html"
     }
   ]
 }

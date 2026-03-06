@@ -1,7 +1,8 @@
 /faceglow/assets/*       /faceglow/assets/:splat        200
 /faceglow/*               /faceglow/index.html            200
 /somali-speak-buddy/assets/* /somali-speak-buddy/assets/:splat 200
+/somali-speak-buddy/sw.js  /somali-speak-buddy/sw.js      200
 /somali-speak-buddy/*     /somali-speak-buddy/index.html   200
-/somali-buddy-speak/*     /somali-speak-buddy/:splat      200
-/somali-buddy/*           /somali-speak-buddy/:splat      200
+/somali-buddy-speak/*     /somali-speak-buddy/:splat      301
+/somali-buddy/*           /somali-speak-buddy/:splat      301
 /*                        /index.html                     200
