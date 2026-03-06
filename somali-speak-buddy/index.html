@@ -4,6 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    if (window.location.pathname === '/somali-speak-buddy') {
+      window.history.replaceState(null, '', '/somali-speak-buddy/');
+    }
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-84WM3TKV8P"></script>
   <script>
@@ -34,7 +39,7 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root"></div>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
+  "trailingSlash": true,
   "redirects": [
     {
       "source": "/somali-buddy-speak",
@@ -8,18 +8,8 @@
       "permanent": true
     },
     {
-      "source": "/somali-buddy-speak/:path*",
-      "destination": "/somali-speak-buddy/:path*",
-      "permanent": true
-    },
-    {
       "source": "/somali-buddy",
       "destination": "/somali-speak-buddy/",
-      "permanent": true
-    },
-    {
-      "source": "/somali-buddy/:path*",
-      "destination": "/somali-speak-buddy/:path*",
       "permanent": true
     }
   ],
