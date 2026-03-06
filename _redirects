@@ -5,4 +5,6 @@
 /somali-speak-buddy/*     /somali-speak-buddy/index.html   200
 /somali-buddy-speak/*     /somali-speak-buddy/:splat      301
 /somali-buddy/*           /somali-speak-buddy/:splat      301
+/nutritrack/assets/*     /nutritrack/assets/:splat        200
+/nutritrack/*           /nutritrack/index.html            200
 /*                        /index.html                     200

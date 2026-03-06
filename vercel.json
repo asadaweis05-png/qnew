@@ -21,6 +21,10 @@
     {
       "source": "/somali-speak-buddy/((?!assets/|favicon.ico|placeholder.svg|robots.txt|sw.js).*)",
       "destination": "/somali-speak-buddy/index.html"
+    },
+    {
+      "source": "/nutritrack/((?!assets/|favicon.ico|og-image.png|placeholder.svg|sw.js).*)",
+      "destination": "/nutritrack/index.html"
     }
   ]
 }

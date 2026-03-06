@@ -1,0 +1,22 @@
+project_id = "kjzpvedjcmaivxpcrtxh"
+
+[functions.ai-health-tips]
+verify_jwt = false
+
+[functions.analyze-food]
+verify_jwt = false
+
+[functions.analyze-food-by-weight]
+verify_jwt = false
+
+[functions.hormuud-evc-payment]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.get-vapid-key]
+verify_jwt = false
+
+[functions.send-email]
+verify_jwt = false
