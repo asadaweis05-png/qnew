@@ -42,54 +42,83 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+
+    if (!GOOGLE_API_KEY) {
+      throw new Error("GOOGLE_API_KEY is not configured");
     }
 
-    console.log("Sending request to Lovable AI Gateway");
+    console.log("Sending request to Gemini API");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Convert chat messages to Gemini format
+    const geminiContents = [];
+
+    // Add system instruction as first user message context
+    geminiContents.push({
+      role: "user",
+      parts: [{ text: systemPrompt + "\n\nPlease acknowledge you understand your role." }]
+    });
+    geminiContents.push({
+      role: "model",
+      parts: [{ text: "I understand! I'm Barashada, your friendly English language tutor for Somali speakers. I'm here to help you learn English step by step. Waa fiican tahay! Let's get started! 😊" }]
+    });
+
+    // Add user messages
+    for (const msg of messages) {
+      geminiContents.push({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }]
+      });
+    }
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-        stream: true,
+        contents: geminiContents,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1024,
+        }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      
+      console.error("Gemini API error:", response.status, errorText);
+
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Usage limit reached. Please try again later." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
+
       return new Response(
         JSON.stringify({ error: "Failed to get AI response" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(response.body, {
+    const aiResponse = await response.json();
+    const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    if (!aiContent) {
+      throw new Error("No content in AI response");
+    }
+
+    // Return in OpenAI-compatible format for the frontend
+    // Format as SSE since frontend expects streaming
+    const sseData = `data: ${JSON.stringify({
+      choices: [{
+        delta: { content: aiContent },
+        finish_reason: "stop"
+      }]
+    })}\n\ndata: [DONE]\n\n`;
+
+    return new Response(sseData, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
