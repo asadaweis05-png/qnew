@@ -25,6 +25,22 @@
     {
       "source": "/nutritrack/((?!assets/|favicon.ico|og-image.png|placeholder.svg|sw.js).*)",
       "destination": "/nutritrack/index.html"
+    },
+    {
+      "source": "/reach-chart-pro/((?!assets/|favicon.*|placeholder.svg).*)",
+      "destination": "/reach-chart-pro/index.html"
+    },
+    {
+      "source": "/pal-quiz-maker/((?!assets/|favicon.*|placeholder.svg).*)",
+      "destination": "/pal-quiz-maker/index.html"
+    },
+    {
+      "source": "/cine-grade-magic/((?!assets/|favicon.*|placeholder.svg).*)",
+      "destination": "/cine-grade-magic/index.html"
+    },
+    {
+      "source": "/somali-word-sagal/((?!assets/|favicon.*|placeholder.svg).*)",
+      "destination": "/somali-word-sagal/index.html"
     }
   ]
 }

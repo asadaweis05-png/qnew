@@ -1,0 +1,10 @@
+project_id = "dqimphwfhlbozdfiveea"
+
+[functions.football-data]
+verify_jwt = false
+
+[functions.send-notification]
+verify_jwt = false
+
+[functions.get-vapid-key]
+verify_jwt = false

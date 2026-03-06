@@ -1,0 +1,156 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 260 84% 75%; /* Beautiful purple */
+    --primary-foreground: 240 10% 3.9%;
+
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 5% 12%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 280 65% 60%;
+    --accent-foreground: 240 10% 3.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 260 84% 75%;
+
+    --radius: 0.75rem;
+
+    /* Custom gradient colors */
+    --gradient-start: 260 84% 75%;
+    --gradient-end: 280 65% 60%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 260 84% 75%;
+    --primary-foreground: 240 10% 3.9%;
+
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 5% 12%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 280 65% 60%;
+    --accent-foreground: 240 10% 3.9%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 260 84% 75%;
+
+    /* Custom gradient colors */
+    --gradient-start: 260 84% 75%;
+    --gradient-end: 280 65% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl;
+  }
+}
+
+@layer components {
+  .tile {
+    @apply inline-flex items-center justify-center w-14 h-14 text-2xl font-bold uppercase border-2 border-gray-300 select-none;
+  }
+  
+  .tile-correct {
+    @apply bg-correct text-white border-correct;
+  }
+  
+  .tile-present {
+    @apply bg-present text-white border-present;
+  }
+  
+  .tile-absent {
+    @apply bg-absent text-white border-absent;
+  }
+
+  .key {
+    @apply flex items-center justify-center rounded-md font-medium text-sm md:text-base select-none cursor-pointer px-2 py-4 md:px-3 md:py-5;
+  }
+
+  .key-absent {
+    @apply bg-absent text-white;
+  }
+
+  .key-present {
+    @apply bg-present text-white;
+  }
+
+  .key-correct {
+    @apply bg-correct text-white;
+  }
+  
+  /* AdSense Container Styles */
+  .ad-container {
+    @apply flex justify-center items-center w-full overflow-hidden;
+    min-height: 60px;
+    margin: 0.5rem auto;
+  }
+  
+  .ad-banner-top, .ad-banner-bottom {
+    @apply bg-white/5 border border-white/10 rounded-md;
+  }
+  
+  .ad-rectangle-middle {
+    @apply bg-white/5 border border-white/10 rounded-md;
+  }
+  
+  .ad-in-article {
+    @apply bg-white/5 border border-white/10 rounded-md;
+  }
+  
+  .ad-game-top, .ad-game-bottom, .ad-game-start {
+    @apply bg-white/5 border border-white/10 rounded-md;
+  }
+  
+  /* Make sure ads are responsive */
+  @media (max-width: 768px) {
+    .ad-container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+  }
+}

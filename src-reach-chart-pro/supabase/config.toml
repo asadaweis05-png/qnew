@@ -1,0 +1,7 @@
+project_id = "kvsjgdelwtizaipjmplg"
+
+[functions.analyze-goals]
+verify_jwt = false
+
+[functions.send-summary]
+verify_jwt = false

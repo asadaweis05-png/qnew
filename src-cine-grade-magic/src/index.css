@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 225 25% 4%;
+    --foreground: 40 20% 92%;
+
+    --card: 225 20% 7%;
+    --card-foreground: 40 20% 92%;
+
+    --popover: 225 20% 7%;
+    --popover-foreground: 40 20% 92%;
+
+    --primary: 175 70% 45%;
+    --primary-foreground: 225 25% 4%;
+
+    --secondary: 28 90% 55%;
+    --secondary-foreground: 225 25% 4%;
+
+    --muted: 225 15% 12%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 175 40% 20%;
+    --accent-foreground: 40 20% 92%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 20% 92%;
+
+    --border: 225 15% 14%;
+    --input: 225 15% 14%;
+    --ring: 175 70% 45%;
+
+    --radius: 0.5rem;
+
+    /* Cinematic tokens */
+    --teal: 175 70% 45%;
+    --orange: 28 90% 55%;
+    --gold: 45 80% 60%;
+    --cream: 40 30% 90%;
+    
+    /* Surface layers */
+    --surface-elevated: 225 18% 9%;
+    --surface-overlay: 225 25% 5%;
+
+    /* Atmospheric effects */
+    --vignette: radial-gradient(ellipse at center, transparent 0%, transparent 50%, hsl(225 25% 2% / 0.8) 100%);
+    --anamorphic: linear-gradient(90deg, hsl(175 70% 45% / 0.03) 0%, transparent 20%, transparent 80%, hsl(28 90% 55% / 0.03) 100%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  /* Typography */
+  .font-display {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--teal)), hsl(var(--orange)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--cream)), hsl(var(--gold)), hsl(var(--orange)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow effects */
+  .glow-teal {
+    box-shadow: 0 0 60px hsl(var(--teal) / 0.25),
+                0 0 120px hsl(var(--teal) / 0.1),
+                inset 0 0 60px hsl(var(--teal) / 0.05);
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 60px hsl(var(--orange) / 0.25),
+                0 0 120px hsl(var(--orange) / 0.1),
+                inset 0 0 60px hsl(var(--orange) / 0.05);
+  }
+
+  .glow-cinematic {
+    box-shadow: 0 0 80px hsl(var(--teal) / 0.15),
+                0 0 80px hsl(var(--orange) / 0.1),
+                0 20px 60px hsl(225 25% 2% / 0.5);
+  }
+
+  /* Film grain overlay */
+  .film-grain {
+    position: relative;
+  }
+
+  .film-grain::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--anamorphic);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .film-grain::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 2;
+  }
+
+  /* Vignette effect */
+  .vignette {
+    position: relative;
+  }
+
+  .vignette::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--vignette);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glass morphism */
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .glass-teal {
+    background: hsl(var(--teal) / 0.08);
+    backdrop-filter: blur(20px) saturate(1.3);
+    border: 1px solid hsl(var(--teal) / 0.2);
+  }
+
+  /* Cinematic border */
+  .border-cinematic {
+    border-image: linear-gradient(135deg, hsl(var(--teal) / 0.5), hsl(var(--orange) / 0.5)) 1;
+  }
+
+  /* Letterbox bars */
+  .letterbox::before,
+  .letterbox::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 4vh;
+    background: hsl(225 25% 2%);
+    z-index: 50;
+  }
+
+  .letterbox::before {
+    top: 0;
+  }
+
+  .letterbox::after {
+    bottom: 0;
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      hsl(var(--cream) / 0.05) 50%,
+      transparent 75%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+}
+
+/* Custom scrollbar - cinematic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(var(--teal) / 0.4), hsl(var(--orange) / 0.4));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(var(--teal) / 0.6), hsl(var(--orange) / 0.6));
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--teal) / 0.3);
+  color: hsl(var(--foreground));
+}
