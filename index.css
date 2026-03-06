@@ -2532,3 +2532,136 @@ ul {
         bottom: 80px;
     }
 }
+
+/* ===== ENHANCED MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 768px) {
+
+    /* Marketplace cards — full width, good thumb target */
+    #marketplace-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    #marketplace-grid .course-card {
+        max-width: 100%;
+    }
+
+    /* Bigger card images on mobile */
+    .course-img-wrap {
+        height: 180px !important;
+    }
+
+    /* Course body padding */
+    .course-body {
+        padding: 18px 20px !important;
+    }
+
+    /* Launch Software button — bigger touch target */
+    .course-body .btn-primary {
+        width: 100% !important;
+        min-height: 50px;
+        font-size: 0.95rem;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Section header stacks on mobile */
+    .section-header {
+        gap: 12px;
+    }
+
+    .view-all {
+        align-self: flex-start;
+    }
+
+    /* Hero section — no horizontal overflow */
+    .hero-glow {
+        width: 100vw !important;
+        left: 50% !important;
+    }
+
+    /* Prevent text overflow */
+    .hero-title {
+        word-break: break-word;
+    }
+
+    /* Stats row */
+    .stats-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Auth modal full-screen on mobile */
+    .modal-content {
+        width: 96vw !important;
+        margin: 8px !important;
+        padding: 1.5rem !important;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    /* Player modal */
+    .player-modal-content {
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Course card title */
+    .course-title {
+        font-size: 1.15rem !important;
+    }
+
+    /* Footer links */
+    .footer-col ul {
+        text-align: center;
+    }
+
+    /* Back to top button */
+    .back-to-top {
+        right: 12px;
+        bottom: 70px;
+    }
+
+    /* Ad container mobile */
+    .ad-container {
+        margin: 30px auto;
+    }
+}
+
+/* Very small screens (iPhone SE etc.) */
+@media (max-width: 390px) {
+
+    html {
+        font-size: 15px;
+    }
+
+    .hero-title {
+        font-size: 1.7rem !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .hero-badge {
+        font-size: 0.7rem;
+        padding: 7px 14px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        font-size: 0.9rem;
+        padding: 12px 20px;
+    }
+
+    .section-title {
+        font-size: 1.35rem;
+    }
+
+    .course-img-wrap {
+        height: 160px !important;
+    }
+}

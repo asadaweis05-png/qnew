@@ -73,7 +73,7 @@ async function analyzeFoodItemsByWeight(apiKey, foodItems) {
       }
     `
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +84,6 @@ async function analyzeFoodItemsByWeight(apiKey, foodItems) {
         }],
         generationConfig: {
           temperature: 0.1,
-          responseMimeType: "application/json",
         }
       })
     });
@@ -141,3 +140,8 @@ function validateNutritionData(data) {
 
   return data
 }
+
+
+
+
+

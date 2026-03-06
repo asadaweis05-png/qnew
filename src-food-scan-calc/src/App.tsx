@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter basename="/nutritrack">
+    <BrowserRouter basename="/nutritrack/">
       <UserProvider>
         <TooltipProvider delayDuration={0}>
           <Toaster />

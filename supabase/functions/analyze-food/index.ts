@@ -71,7 +71,7 @@ CRITICAL: Respond with ONLY a raw JSON object with these exact fields. Do NOT in
       }];
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,6 @@ CRITICAL: Respond with ONLY a raw JSON object with these exact fields. Do NOT in
         contents,
         generationConfig: {
           temperature: 0.1,
-          responseMimeType: "application/json",
         }
       })
     });
@@ -139,3 +138,8 @@ CRITICAL: Respond with ONLY a raw JSON object with these exact fields. Do NOT in
     );
   }
 });
+
+
+
+
+
