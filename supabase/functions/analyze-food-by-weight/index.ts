@@ -1,6 +1,4 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient as createOpenAIClient } from 'https://esm.sh/openai@4.16.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,38 +6,29 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    // Check request method
     if (req.method !== 'POST') {
       throw new Error(`Method ${req.method} not allowed`)
     }
 
-    // Parse request body
     const requestData = await req.json()
     console.log('Request received:', JSON.stringify(requestData))
 
-    // Check if we have foodItems
     if (!requestData.foodItems || !Array.isArray(requestData.foodItems) || requestData.foodItems.length === 0) {
       throw new Error('Request must include an array of foodItems')
     }
 
-    // Initialize OpenAI
-    const openAiKey = Deno.env.get('OPENAI_API_KEY')
-    if (!openAiKey) {
-      throw new Error('OpenAI API key not configured')
+    const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY')
+    if (!GOOGLE_API_KEY) {
+      throw new Error('Google AI API key not configured')
     }
 
-    const openai = createOpenAIClient({ apiKey: openAiKey })
+    const nutritionData = await analyzeFoodItemsByWeight(GOOGLE_API_KEY, requestData.foodItems)
 
-    // Analyze food items
-    const nutritionData = await analyzeFoodItemsByWeight(openai, requestData.foodItems)
-
-    // Return successful response
     return new Response(
       JSON.stringify({ nutritionData }),
       {
@@ -49,12 +38,11 @@ serve(async (req) => {
     )
   } catch (error) {
     console.error('Error processing request:', error)
-    
-    // Return error response
+
     return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        details: error.stack 
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Unknown Error',
+        details: error.stack
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -64,10 +52,9 @@ serve(async (req) => {
   }
 })
 
-async function analyzeFoodItemsByWeight(openai, foodItems) {
+async function analyzeFoodItemsByWeight(apiKey, foodItems) {
   try {
-    // Format the food items for the prompt
-    const formattedItems = foodItems.map(item => 
+    const formattedItems = foodItems.map(item =>
       `${item.name}: ${item.grams}g`
     ).join('\n');
 
@@ -76,66 +63,57 @@ async function analyzeFoodItemsByWeight(openai, foodItems) {
       ${formattedItems}
       
       Calculate the total nutritional value of all items combined.
-      Respond ONLY with valid JSON in this exact format:
+      CRITICAL: Respond ONLY with valid JSON in this exact format, with no markdown code blocks:
       {
         "name": "Combined meal",
-        "calories": total number,
-        "protein": total number in grams,
-        "carbs": total number in grams,
-        "fat": total number in grams
+        "calories": number (total),
+        "protein": number (total in grams),
+        "carbs": number (total in grams),
+        "fat": number (total in grams)
       }
     `
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "You are a nutritional analysis assistant. You provide accurate nutrition information for foods." },
-        { role: "user", content: prompt }
-      ],
-      tools: [{
-        type: 'function',
-        function: {
-          name: 'provide_nutrition_info',
-          description: 'Provide combined nutritional information for food items',
-          parameters: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'Name of the combined meal' },
-              calories: { type: 'number', description: 'Total calories' },
-              protein: { type: 'number', description: 'Total protein in grams' },
-              carbs: { type: 'number', description: 'Total carbs in grams' },
-              fat: { type: 'number', description: 'Total fat in grams' }
-            },
-            required: ['name', 'calories', 'protein', 'carbs', 'fat'],
-            additionalProperties: false
-          }
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: "application/json",
         }
-      }],
-      tool_choice: { type: 'function', function: { name: 'provide_nutrition_info' } },
-      temperature: 0.3,
-      max_tokens: 500
-    })
+      })
+    });
 
-    console.log('Received response from OpenAI')
-    
-    if (!response.choices || response.choices.length === 0) {
-      throw new Error('Invalid response from OpenAI API')
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
-    // Extract nutrition data from tool call
-    try {
-      const toolCall = response.choices[0].message.tool_calls?.[0];
-      if (toolCall && toolCall.function) {
-        const parsedData = JSON.parse(toolCall.function.arguments);
-        validateNutritionData(parsedData);
-        return parsedData;
-      } else {
-        throw new Error('No tool call in response');
-      }
-    } catch (parseError) {
-      console.error('Error parsing tool call:', parseError);
-      throw new Error('Could not parse nutrition data from response')
+    const aiResponse = await response.json();
+    const aiContent = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    if (!aiContent) {
+      throw new Error('No content in AI response');
     }
+
+    let nutritionData;
+    let jsonStr = aiContent.trim();
+    const jsonMatch = jsonStr.match(/```json\s*([\s\S]*?)\s*```/) ||
+      jsonStr.match(/```\s*([\s\S]*?)\s*```/) ||
+      jsonStr.match(/\{[\s\S]*\}/);
+
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1] || jsonMatch[0];
+    }
+    nutritionData = JSON.parse(jsonStr);
+
+    return validateNutritionData(nutritionData);
+
   } catch (error) {
     console.error('Error in analyzeFoodItemsByWeight:', error)
     throw error
@@ -150,11 +128,9 @@ function validateNutritionData(data) {
     }
   }
 
-  // Ensure numeric fields are actually numbers
   const numericFields = ['calories', 'protein', 'carbs', 'fat']
   for (const field of numericFields) {
     if (typeof data[field] !== 'number') {
-      // Try to convert string to number if possible
       const num = Number(data[field])
       if (isNaN(num)) {
         throw new Error(`Field ${field} must be a number`)
