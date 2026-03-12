@@ -19,6 +19,10 @@
       "destination": "/faceglow/index.html"
     },
     {
+      "source": "/livesomali/((?!assets/|favicon.*|placeholder.svg).*)",
+      "destination": "/livesomali/index.html"
+    },
+    {
       "source": "/somali-speak-buddy/((?!assets/|favicon.ico|placeholder.svg|robots.txt|sw.js).*)",
       "destination": "/somali-speak-buddy/index.html"
     },
