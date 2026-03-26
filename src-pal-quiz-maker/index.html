@@ -4,6 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <script>
+    if (window.location.pathname === '/pal-quiz-maker') {
+      window.history.replaceState(null, '', '/pal-quiz-maker/');
+    }
+  </script>
   <title>Imtixaanka Saaxiibka - Tijaabi Saaxiibtinimada!</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8203084339795682"
     crossorigin="anonymous"></script>

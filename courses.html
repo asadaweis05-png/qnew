@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THEQNEW - Courses Dashboard</title>
+    <meta name="description" content="Track your course progress and optimize your learning on THEQNEW.">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body {
+            background-color: var(--bg-primary);
+            padding-top: 100px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: #fff;
+        }
+
+        .progress-card {
+            background: rgba(20, 25, 40, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-card h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #a855f7);
+            width: 35%;
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card.enrolled .course-badge {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ======= NAVBAR ======= -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span>THE<span class="logo-accent">QNEW</span></span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html#marketplace">Marketplace</a>
+                <a href="courses.html" style="color: var(--accent);">Courses Dashboard</a>
+                <a href="index.html#news">News</a>
+                <a href="index.html#reviews">AI Reviews</a>
+                <a href="index.html#newsletter">Join Community</a>
+            </div>
+            <div class="nav-actions">
+                <a href="index.html" class="btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header reveal">
+            <h1 class="dashboard-title">Your Learning Dashboard</h1>
+        </div>
+
+        <section class="progress-card reveal-left">
+            <h3>Overall Progress</h3>
+            <p style="color: #aaa;">You have completed 35% of your enrolled courses this month. Keep it up!</p>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-stats">
+                <span>Total Enrolled: 4</span>
+                <span>Completed: 1</span>
+                <span>In Progress: 3</span>
+            </div>
+        </section>
+
+        <div class="filters reveal">
+            <button class="filter-btn active">In Progress</button>
+            <button class="filter-btn">Completed</button>
+            <button class="filter-btn">Saved for Later</button>
+            <button class="filter-btn" style="margin-left: auto; background: rgba(255,255,255,0.1);">Browse New</button>
+        </div>
+
+        <div class="courses-grid" id="courses-grid">
+            <!-- Course 0: New App Build Course -->
+            <div class="course-card enrolled reveal">
+                <div class="course-img-wrap">
+                    <img src="images/build-app-thumbnail.png" alt="How to Build Application" loading="lazy">
+                    <span class="course-badge">Enrolled</span>
+                    <div class="card-overlay"></div>
+                </div>
+                <div class="course-body">
+                    <h3 class="course-title">How to Build Application</h3>
+                    <p class="course-desc">Step-by-step guide to building and deploying your first AI-driven
+                        application.</p>
+                    <div class="course-meta" style="flex-direction: column; align-items: flex-start;">
+                        <span class="course-students" style="margin-bottom: 10px;">Progress: 60%</span>
+                        <div class="progress-bar-bg" style="height: 6px; margin-top: 0; margin-bottom: 15px;">
+                            <div class="progress-bar-fill" style="width: 60%;"></div>
+                        </div>
+                        <a href="#" class="btn-primary w-full text-center">Continue Learning</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 1 -->
+            <div class="course-card enrolled reveal">
+                <div class="course-img-wrap">
+                    <img src="images/course-prompt.png" alt="Prompt Engineering 101" loading="lazy">
+                    <span class="course-badge">Enrolled</span>
+                    <div class="card-overlay"></div>
+                </div>
+                <div class="course-body">
+                    <h3 class="course-title">Prompt Engineering 101</h3>
+                    <p class="course-desc">Learn to craft effective prompts to maximize AI text generation tools.</p>
+                    <div class="course-meta" style="flex-direction: column; align-items: flex-start;">
+                        <span class="course-students" style="margin-bottom: 10px;">Progress: 20%</span>
+                        <div class="progress-bar-bg" style="height: 6px; margin-top: 0; margin-bottom: 15px;">
+                            <div class="progress-bar-fill" style="width: 20%;"></div>
+                        </div>
+                        <a href="#" class="btn-primary w-full text-center">Continue Learning</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="course-card enrolled reveal">
+                <div class="course-img-wrap">
+                    <img src="images/course-genai.png" alt="Generative AI for Business" loading="lazy">
+                    <span class="course-badge">Enrolled</span>
+                    <div class="card-overlay"></div>
+                </div>
+                <div class="course-body">
+                    <h3 class="course-title">Generative AI for Business</h3>
+                    <p class="course-desc">Understand how to leverage AI in enterprises for automation and optimizing
+                        work flows.</p>
+                    <div class="course-meta" style="flex-direction: column; align-items: flex-start;">
+                        <span class="course-students" style="margin-bottom: 10px;">Progress: 5%</span>
+                        <div class="progress-bar-bg" style="height: 6px; margin-top: 0; margin-bottom: 15px;">
+                            <div class="progress-bar-fill" style="width: 5%;"></div>
+                        </div>
+                        <a href="#" class="btn-primary w-full text-center">Continue Learning</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="course-card reveal" style="opacity: 0.7;">
+                <div class="course-img-wrap">
+                    <img src="images/course-neural.png" alt="Neural Networks Explained" loading="lazy">
+                    <span class="course-badge" style="background: rgba(255,255,255,0.2); color: #fff;">Saved</span>
+                </div>
+                <div class="course-body">
+                    <h3 class="course-title" style="color: #aaa;">Neural Networks Explained</h3>
+                    <p class="course-desc">Dive into neural network architectures, backpropagation, and deep learning.
+                    </p>
+                    <div class="course-meta">
+                        <a href="#" class="btn-primary w-full text-center"
+                            style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">Start
+                            Course</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="app.js"></script>
+    <script>
+        // Simple script to simulate reveal animations and handle filters instantly
+        document.addEventListener("DOMContentLoaded", () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => { el.style.opacity = "1"; el.style.transform = "translateY(0)"; });
+
+            const reqLefts = document.querySelectorAll('.reveal-left');
+            reqLefts.forEach(el => { el.style.opacity = "1"; el.style.transform = "translateX(0)"; });
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
