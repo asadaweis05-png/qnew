@@ -4,524 +4,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THEQNEW — Courses Dashboard</title>
-    <meta name="description" content="Track your course progress and optimize your learning on THEQNEW.">
+    <title>THEQNEW — Learning Dashboard</title>
+    <meta name="description" content="Professional course dashboard for THEQNEW.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="index.css">
+    <!-- Icons (Phosphor Icons for a premium look) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-        /* Premium Dashboard Base */
-        body {
-            background-color: var(--bg-primary);
-            padding-top: 100px;
+        /* Root Variables for Navy/Light Blue Brand */
+        :root {
+            --brand-navy: #0B1120;
+            --brand-navy-light: #151F32;
+            --brand-navy-lighter: #1E293B;
+            --brand-blue: #38BDF8;
+            --brand-blue-hover: #0EA5E9;
+            --brand-blue-glow: rgba(56, 189, 248, 0.2);
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --border-color: rgba(56, 189, 248, 0.15);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Inter', sans-serif;
-            position: relative;
+        }
+
+        body {
+            background-color: var(--brand-navy);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Abstract Ambient Background */
-        .ambient-blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.5;
-            animation: float 10s infinite ease-in-out alternate;
-        }
-
-        .blob-1 {
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
-        }
-
-        .blob-2 {
-            bottom: -10%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) scale(1);
-            }
-
-            100% {
-                transform: translateY(30px) scale(1.05);
-            }
-        }
-
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px 40px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .dashboard-header {
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--brand-navy-light);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            margin-bottom: 50px;
-            gap: 15px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
         }
 
-        .dashboard-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-            letter-spacing: -1px;
-        }
-
-        .dashboard-subtitle {
-            color: #94a3b8;
-            font-size: 1.1rem;
-            max-width: 600px;
-            line-height: 1.6;
-        }
-
-        /* Hero Progress Card */
-        .progress-hero {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 40px;
-            margin-bottom: 50px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .brand {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 50px;
+            padding-left: 10px;
+            color: white;
+            text-decoration: none;
         }
 
-        .progress-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.5;
+        .brand span {
+            color: var(--brand-blue);
         }
 
-        .progress-hero-content {
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             flex: 1;
-            padding-right: 40px;
         }
 
-        .progress-hero h3 {
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--brand-blue-glow);
+            color: var(--brand-blue);
+            border: 1px solid var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background-color: var(--brand-navy-lighter);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-blue), #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 600;
+            color: white;
         }
 
-        .progress-hero p {
-            color: #94a3b8;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+        .user-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 2px;
         }
 
-        .progress-bar-bg {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            height: 16px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #a855f7, #ec4899);
-            width: 35%;
-            border-radius: 20px;
-            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 50px;
+            max-width: 1400px;
         }
 
-        .progress-bar-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-            transform: translateX(-100%);
-            animation: shimmer 2s infinite;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
         }
 
-        @keyframes shimmer {
-            100% {
-                transform: translateX(100%);
-            }
+        .header-greeting h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
+        .header-greeting p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .header-actions .btn-browse {
+            background-color: var(--brand-blue);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .header-actions .btn-browse:hover {
+            background-color: var(--brand-blue-hover);
+        }
+
+        /* Stats Row */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-left: 40px;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            padding-left: 40px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 50px;
         }
 
-        .stat-box {
-            text-align: center;
+        .stat-card {
+            background-color: var(--brand-navy-light);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-num {
-            display: block;
-            font-size: 2.5rem;
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--brand-blue);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .stat-card.orange::before {
+            background-color: #f59e0b;
+        }
+
+        .stat-card.green::before {
+            background-color: #10b981;
+        }
+
+        .stat-card.purple::before {
+            background-color: #a855f7;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background-color: var(--brand-blue-glow);
+            color: var(--brand-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .stat-card.orange .stat-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .stat-card.green .stat-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .stat-card.purple .stat-icon {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+
+        .stat-value {
+            font-size: 2rem;
             font-weight: 700;
-            color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        /* Filter Tabs */
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 20px;
-        }
-
-        .filter-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #94a3b8;
-            padding: 12px 24px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
             font-weight: 500;
         }
 
-        .filter-btn:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-            color: #fff;
-            transform: translateY(-2px);
+        /* Active Courses Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
-        .filter-btn.active {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
         }
 
-        /* Course Cards Enhancements */
+        .tab-list {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-main);
+        }
+
+        .tab.active {
+            background: var(--brand-navy-light);
+            border: 1px solid var(--border-color);
+            color: var(--brand-blue);
+        }
+
         .courses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
         }
 
-        .course-card.enrolled {
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
+        .course-card {
+            background-color: var(--brand-navy-light);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            padding: 24px;
+            gap: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .course-card.enrolled .course-badge {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--brand-blue);
         }
 
-        .mini-progress {
-            margin: 20px 0;
+        .course-thumb {
+            width: 140px;
+            height: 140px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
         }
 
-        .mini-progress-header {
+        .course-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--brand-blue);
+            margin-bottom: 8px;
+        }
+
+        .course-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .progress-container {
+            margin-top: auto;
+        }
+
+        .progress-header {
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: var(--text-muted);
             margin-bottom: 8px;
             font-weight: 500;
         }
 
-        /* Mobile Responsiveness */
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background-color: var(--brand-navy-lighter);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--brand-blue);
+            border-radius: 10px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--brand-blue);
+            color: var(--brand-blue);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-continue:hover {
+            background: var(--brand-blue-glow);
+        }
+
+        /* Mobile Adjustments */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1100px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 900px) {
-            .progress-hero {
-                flex-direction: column;
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
             }
 
-            .progress-hero-content {
-                padding-right: 0;
-                margin-bottom: 30px;
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 30px 20px;
             }
 
             .stats-grid {
-                border-left: none;
-                padding-left: 0;
-                margin-left: 0;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                padding-top: 30px;
-                width: 100%;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 15px;
+            }
+
+            .header-greeting {
+                display: flex;
+                align-items: center;
             }
         }
 
         @media (max-width: 600px) {
-            .filters {
-                flex-wrap: wrap;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
 
-            .dashboard-title {
-                font-size: 2.5rem;
+            .course-card {
+                flex-direction: column;
             }
 
-            .stat-num {
-                font-size: 2rem;
+            .course-thumb {
+                width: 100%;
+                height: 180px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="ambient-blob blob-1"></div>
-    <div class="ambient-blob blob-2"></div>
-
-    <!-- ======= NAVBAR ======= -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">
-                <span>THE<span class="logo-accent">QNEW</span></span>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="index.html" class="brand">
+            THE<span>QNEW</span>
+        </a>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active">
+                <i class="ph ph-squares-four"></i>
+                Dashboard
             </a>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html#marketplace">Marketplace</a>
-                <a href="courses.html" style="color: var(--accent);">Courses Dashboard</a>
-                <a href="index.html#news">News</a>
-                <a href="index.html#reviews">AI Reviews</a>
-                <a href="index.html#newsletter">Join Community</a>
-            </div>
-            <div class="nav-actions">
-                <a href="index.html" class="btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Back to Home</a>
-            </div>
-            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Mobile Overlay Nav -->
-    <div class="mobile-overlay" id="mobileOverlay">
-        <a href="index.html#marketplace">Marketplace</a>
-        <a href="courses.html" style="color: var(--accent);">Courses Dashboard</a>
-        <a href="index.html#news">News</a>
-        <a href="index.html#reviews">AI Reviews</a>
-        <a href="index.html">Back to Home</a>
-    </div>
-
-    <div class="dashboard-container">
-        <div class="dashboard-header reveal">
-            <h1 class="dashboard-title">Your Learning Dashboard</h1>
-            <p class="dashboard-subtitle">Track your progress, resume your courses, and optimize your path to mastering
-                artificial intelligence and software engineering.</p>
+            <a href="index.html#courses" class="nav-item">
+                <i class="ph ph-books"></i>
+                All Courses
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ph ph-certificate"></i>
+                Certificates
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ph ph-chart-line-up"></i>
+                Analytics
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ph ph-bookmark-simple"></i>
+                Saved Items
+            </a>
+            <a href="index.html" class="nav-item">
+                <i class="ph ph-house"></i>
+                Back to Home
+            </a>
         </div>
 
-        <section class="progress-hero reveal">
-            <div class="progress-hero-content">
-                <h3>Mastery Level: Intermediate</h3>
-                <p>You have completed 35% of your enrolled courses this month. Keep up the momentum!</p>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: 35%;"></div>
-                </div>
+        <div class="user-profile">
+            <div class="avatar">U</div>
+            <div class="user-info">
+                <h4>User Account</h4>
+                <p>Free Member</p>
             </div>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span class="stat-num text-gradient">4</span>
-                    <span class="stat-label">Enrolled</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-num" style="color: #10b981;">1</span>
-                    <span class="stat-label">Completed</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-num" style="color: #a855f7;">3</span>
-                    <span class="stat-label">In Progress</span>
-                </div>
-            </div>
-        </section>
+        </div>
+    </aside>
 
-        <div class="filters reveal">
-            <button class="filter-btn active">In Progress</button>
-            <button class="filter-btn">Completed</button>
-            <button class="filter-btn">Saved for Later</button>
-            <button class="filter-btn"
-                style="border-radius: 50px; background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #fff; margin-left: auto;">Browse
-                Catalog ✦</button>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="header-greeting">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="ph ph-list"></i>
+                </button>
+                <div>
+                    <h1>Welcome back!</h1>
+                    <p>Track your progress and pick up where you left off.</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="index.html#courses" class="btn-browse">
+                    <i class="ph ph-magnifying-glass"></i>
+                    Browse Catalog
+                </a>
+            </div>
         </div>
 
-        <div class="courses-grid" id="courses-grid">
-            <!-- Course 0: New App Build Course -->
-            <div class="course-card enrolled reveal">
-                <div class="course-img-wrap">
-                    <img src="images/build-app-thumbnail.png" alt="How to Build Application" loading="lazy">
-                    <span class="course-badge">Enrolled</span>
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">How to Build Application</h3>
-                    <p class="course-desc">Step-by-step guide to building and deploying your first AI-driven application
-                        using modern stacks.</p>
+        <!-- Metrics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="ph ph-books"></i></div>
+                <div class="stat-value">4</div>
+                <div class="stat-label">Enrolled Courses</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon"><i class="ph ph-clock"></i></div>
+                <div class="stat-value">12h</div>
+                <div class="stat-label">Hours Learned</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="ph ph-check-circle"></i></div>
+                <div class="stat-value">1</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon"><i class="ph ph-certificate"></i></div>
+                <div class="stat-value">0</div>
+                <div class="stat-label">Certificates</div>
+            </div>
+        </div>
 
-                    <div class="mini-progress">
-                        <div class="mini-progress-header">
+        <!-- Active Courses -->
+        <div class="section-header">
+            <h2 class="section-title">My Learning</h2>
+            <div class="tab-list">
+                <button class="tab active">In Progress</button>
+                <button class="tab">Completed</button>
+            </div>
+        </div>
+
+        <div class="courses-grid">
+            <!-- Course 1 -->
+            <div class="course-card">
+                <img src="images/build-app-thumbnail.png" alt="How to Build Application" class="course-thumb">
+                <div class="course-info">
+                    <span class="course-tag">Software Engineering</span>
+                    <h3 class="course-title">How to Build and Deploy Your First AI Application</h3>
+
+                    <div class="progress-container">
+                        <div class="progress-header">
                             <span>Chapter 3 of 5</span>
-                            <span style="color: var(--accent);">60%</span>
+                            <span style="color: var(--brand-blue);">60%</span>
                         </div>
-                        <div class="progress-bar-bg" style="height: 6px;">
+                        <div class="progress-bar-bg">
                             <div class="progress-bar-fill" style="width: 60%;"></div>
                         </div>
-                    </div>
-
-                    <div class="course-meta">
-                        <a href="#" class="btn-primary w-full text-center">Resume Learning</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course 1 -->
-            <div class="course-card enrolled reveal">
-                <div class="course-img-wrap">
-                    <img src="images/course-prompt.png" alt="Prompt Engineering 101" loading="lazy">
-                    <span class="course-badge">Enrolled</span>
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Prompt Engineering 101</h3>
-                    <p class="course-desc">Learn to craft effective prompts to maximize AI text generation tools and
-                        achieve hyper-precision.</p>
-
-                    <div class="mini-progress">
-                        <div class="mini-progress-header">
-                            <span>Chapter 1 of 12</span>
-                            <span style="color: var(--accent);">15%</span>
-                        </div>
-                        <div class="progress-bar-bg" style="height: 6px;">
-                            <div class="progress-bar-fill" style="width: 15%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="course-meta">
-                        <a href="#" class="btn-primary w-full text-center">Resume Learning</a>
+                        <button class="btn-continue">Resume Learning</button>
                     </div>
                 </div>
             </div>
 
             <!-- Course 2 -->
-            <div class="course-card enrolled reveal">
-                <div class="course-img-wrap">
-                    <img src="images/course-genai.png" alt="Generative AI for Business" loading="lazy">
-                    <span class="course-badge">Enrolled</span>
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Generative AI for Business</h3>
-                    <p class="course-desc">Understand how to leverage AI in enterprises for automation, scaling, and
-                        optimizing workflows.</p>
+            <div class="course-card">
+                <img src="images/course-prompt.png" alt="Prompt Engineering 101" class="course-thumb">
+                <div class="course-info">
+                    <span class="course-tag">Artificial Intelligence</span>
+                    <h3 class="course-title">Prompt Engineering 101: Mastering Generative AI</h3>
 
-                    <div class="mini-progress">
-                        <div class="mini-progress-header">
-                            <span>Just Started</span>
-                            <span style="color: var(--accent);">5%</span>
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span>Chapter 1 of 12</span>
+                            <span style="color: var(--brand-blue);">15%</span>
                         </div>
-                        <div class="progress-bar-bg" style="height: 6px;">
-                            <div class="progress-bar-fill" style="width: 5%;"></div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: 15%;"></div>
                         </div>
-                    </div>
-
-                    <div class="course-meta">
-                        <a href="#" class="btn-primary w-full text-center">Continue Learning</a>
+                        <button class="btn-continue">Resume Learning</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Course 3 (Saved) -->
-            <div class="course-card reveal" style="opacity: 0.8;">
-                <div class="course-img-wrap">
-                    <img src="images/course-neural.png" alt="Neural Networks Explained" loading="lazy">
-                    <span class="course-badge"
-                        style="background: rgba(30,30,40,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2);">Saved</span>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Neural Networks Explained</h3>
-                    <p class="course-desc">Dive deeply into neural network architectures, backpropagation algorithms,
-                        and deep learning frameworks.</p>
-                    <div class="course-meta" style="margin-top: 40px;">
-                        <a href="#" class="btn-primary w-full text-center"
-                            style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;">Start
-                            New Course</a>
+            <!-- Course 3 -->
+            <div class="course-card">
+                <img src="images/course-genai.png" alt="Generative AI for Business" class="course-thumb">
+                <div class="course-info">
+                    <span class="course-tag">Business & Strategy</span>
+                    <h3 class="course-title">Generative AI for Enterprises and Workflows</h3>
+
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span>Introduction</span>
+                            <span style="color: var(--brand-blue);">5%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: 5%;"></div>
+                        </div>
+                        <button class="btn-continue">Continue Learning</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Script imports -->
-    <script src="app.js"></script>
     <script>
-        // Reveal elements seamlessly with staggered animation
-        document.addEventListener("DOMContentLoaded", () => {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach((el, index) => {
-                setTimeout(() => {
-                    el.style.opacity = "1";
-                    el.style.transform = "translateY(0)";
-                }, index * 100);
+        // Mobile Sidebar Toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+
+        if (mobileBtn && sidebar) {
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
             });
 
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 900) {
+                    if (!sidebar.contains(e.target) && !mobileBtn.contains(e.target) && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                    }
+                }
             });
-
-            // Mobile menu functionality
-            const hamburger = document.getElementById('hamburger');
-            const mobileOverlay = document.getElementById('mobileOverlay');
-
-            if (hamburger && mobileOverlay) {
-                hamburger.addEventListener('click', () => {
-                    hamburger.classList.toggle('active');
-                    mobileOverlay.classList.toggle('active');
-                });
-            }
-        });
+        }
     </script>
 </body>
 
