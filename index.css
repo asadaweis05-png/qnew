@@ -1710,6 +1710,12 @@ ul {
     visibility: visible;
 }
 
+/* Also show backdrop when parent modal is active */
+.modal.active .modal-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
 .modal {
     position: fixed;
     top: 50%;
@@ -2003,9 +2009,14 @@ ul {
 }
 
 /* ===== COURSE PLAYER MODAL ===== */
-.player-modal-content {
+#coursePlayerModal {
     width: 95vw;
     max-width: 1400px;
+}
+
+.player-modal-content {
+    width: 100%;
+    max-width: 100%;
     height: 90vh;
     padding: 0;
     background: var(--bg-primary);
@@ -2031,11 +2042,42 @@ ul {
     width: 100%;
     aspect-ratio: 16/9;
     background: #000;
+    position: relative;
+    overflow: hidden;
 }
 
 .video-container iframe {
     width: 100%;
     height: 100%;
+    border: none;
+}
+
+/* Hide YouTube logo watermark in bottom-right corner */
+.video-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 120px;
+    height: 40px;
+    background: transparent;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Hide YouTube logo that appears on hover in top-left */
+.video-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.3s ease;
 }
 
 .player-info {

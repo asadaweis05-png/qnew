@@ -487,7 +487,7 @@ window.playLesson = function (videoId, title, element) {
     const player = document.getElementById('mainVideoPlayer');
     const titleEl = document.getElementById('currentLessonTitle');
 
-    player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&cc_load_policy=0&disablekb=0&fs=1&controls=1`;
     titleEl.textContent = title;
 
     if (element) {
@@ -513,11 +513,13 @@ function initSupabaseAuth() {
     const authTabs = document.querySelectorAll('.auth-tab-btn');
     const navLogoutBtn = document.getElementById('navLogoutBtn');
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const navAdminLink = document.getElementById('navAdminLink');
+    const mobileAdminLink = document.getElementById('mobileAdminLink');
 
-    if (navLoginBtn) navLoginBtn.onclick = () => openAuthModal('login');
-    if (navSignupBtn) navSignupBtn.onclick = () => openAuthModal('signup');
-    if (mobileLoginBtn) mobileLoginBtn.onclick = () => openAuthModal('login');
-    if (mobileSignupBtn) mobileSignupBtn.onclick = () => openAuthModal('signup');
+    if (navLoginBtn) navLoginBtn.onclick = (e) => { e.preventDefault(); openAuthModal('login'); };
+    if (navSignupBtn) navSignupBtn.onclick = (e) => { e.preventDefault(); openAuthModal('signup'); };
+    if (mobileLoginBtn) mobileLoginBtn.onclick = (e) => { e.preventDefault(); openAuthModal('login'); };
+    if (mobileSignupBtn) mobileSignupBtn.onclick = (e) => { e.preventDefault(); openAuthModal('signup'); };
 
     // Handle Auth Tabs
     authTabs.forEach(btn => {
@@ -572,6 +574,8 @@ function initSupabaseAuth() {
     // Auth State Observer
     supabaseClient.auth.onAuthStateChange((event, session) => {
         const user = session?.user;
+        const isAdmin = user && user.email === 'asadaweis05@gmail.com';
+        
         if (user) {
             if (navLoginBtn) navLoginBtn.style.display = 'none';
             if (navSignupBtn) navSignupBtn.style.display = 'none';
@@ -579,6 +583,12 @@ function initSupabaseAuth() {
             if (mobileSignupBtn) mobileSignupBtn.style.display = 'none';
             if (navLogoutBtn) navLogoutBtn.style.display = 'block';
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+            
+            // Show Admin link only for admin user
+            if (isAdmin) {
+                if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                if (mobileAdminLink) mobileAdminLink.style.display = 'block';
+            }
         } else {
             if (navLoginBtn) navLoginBtn.style.display = 'block';
             if (navSignupBtn) navSignupBtn.style.display = 'block';
@@ -586,6 +596,8 @@ function initSupabaseAuth() {
             if (mobileSignupBtn) mobileSignupBtn.style.display = 'block';
             if (navLogoutBtn) navLogoutBtn.style.display = 'none';
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+            if (navAdminLink) navAdminLink.style.display = 'none';
+            if (mobileAdminLink) mobileAdminLink.style.display = 'none';
         }
     });
 

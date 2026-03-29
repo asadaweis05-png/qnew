@@ -219,7 +219,7 @@ function initForms() {
             const video_id = extractYouTubeId(yt_url);
 
             if (!video_id) {
-                showToast('Invalid YouTube URL', 'error');
+                showToast('Invalid video URL', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = id ? 'Update Course' : 'Add Course';
                 return;
@@ -315,7 +315,7 @@ function initLessonForm() {
         const videoId = extractYouTubeId(ytUrl);
 
         if (!videoId) {
-            showToast('Invalid YouTube URL for lesson', 'error');
+            showToast('Invalid video URL for lesson', 'error');
             return;
         }
 
@@ -434,7 +434,7 @@ function renderLessons() {
         <div class="lesson-item">
             <div class="lesson-info">
                 <span class="lesson-title">${lesson.title}</span>
-                <span class="lesson-meta">YT ID: ${lesson.video_id}</span>
+                <span class="lesson-meta">Video ID: ${lesson.video_id}</span>
             </div>
             <div class="lesson-actions">
                 <button class="btn-lesson-edit" onclick="editLesson('${lesson.id}')">Edit</button>
