@@ -36,7 +36,5 @@
   to = "/somali-word-sagal/index.html"
   status = 200
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Remove the catch-all redirect to allow other static files (admin, about, courses) to work. 
+# SPA projects already have their specific nested redirects above.
