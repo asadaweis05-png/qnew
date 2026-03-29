@@ -17,21 +17,31 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
-        // Immediately Check Auth Status
-        (async function checkAuth() {
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-
-                if (error || !session || !session.user) {
+        // High-security Auth Check
+        (function() {
+            // Immediate check from storage if possible
+            const check = () => {
+                if (!window.supabaseClient) return setTimeout(check, 50);
+                
+                window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    const isAdmin = session?.user?.email === 'asadaweis05@gmail.com';
+                    if (!session || !isAdmin) {
+                        window.location.href = 'index.html';
+                    }
+                }).catch(() => {
                     window.location.href = 'index.html';
-                    return;
-                }
-
-                if (session.user.email !== 'asadaweis05@gmail.com') {
-                    window.location.href = 'index.html';
-                }
-            } catch (err) {
-                window.location.href = 'index.html';
+                });
+            };
+            
+            check();
+            
+            // Also monitor auth changes
+            if (window.supabaseClient) {
+                window.supabaseClient.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT' || (session && session.user.email !== 'asadaweis05@gmail.com')) {
+                        window.location.href = 'index.html';
+                    }
+                });
             }
         })();
     </script>
