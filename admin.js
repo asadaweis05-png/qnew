@@ -101,9 +101,9 @@ function renderAll() {
 }
 
 function updateStats() {
-    document.getElementById('stat-courses').textContent = `${adminData.courses.length} Courses`;
-    document.getElementById('stat-articles').textContent = `${adminData.articles.length} Articles`;
-    document.getElementById('stat-reviews').textContent = `${adminData.reviews.length} Reviews`;
+    if (document.getElementById('stat-courses')) document.getElementById('stat-courses').textContent = `${adminData.courses.length} Courses`;
+    if (document.getElementById('stat-articles')) document.getElementById('stat-articles').textContent = `${adminData.articles.length} Articles`;
+    if (document.getElementById('stat-reviews')) document.getElementById('stat-reviews').textContent = `${adminData.reviews.length} Reviews`;
 }
 
 function createEmptyState(message) {
@@ -113,6 +113,7 @@ function createEmptyState(message) {
 // Render Courses
 function renderCourses() {
     const list = document.getElementById('courses-list');
+    if (!list) return;
     const courses = adminData.courses;
 
     if (courses.length === 0) {
@@ -141,6 +142,7 @@ function renderCourses() {
 // Render Articles
 function renderArticles() {
     const list = document.getElementById('articles-list');
+    if (!list) return;
     const articles = adminData.articles;
 
     if (articles.length === 0) {
@@ -167,6 +169,7 @@ function renderArticles() {
 // Render Reviews
 function renderReviews() {
     const list = document.getElementById('reviews-list');
+    if (!list) return;
     const reviews = adminData.reviews;
 
     if (reviews.length === 0) {
@@ -176,8 +179,8 @@ function renderReviews() {
 
     list.innerHTML = reviews.map(review => `
         <div class="admin-item-card">
-            <div style="width: 40px; height: 40px; border-radius: 8px; background: ${review.color}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 1.2rem; margin-bottom: 8px;">
-                ${review.tool.charAt(0).toUpperCase()}
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: ${review.color || '#3b82f6'}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 1.2rem; margin-bottom: 8px;">
+                ${(review.tool || 'T').charAt(0).toUpperCase()}
             </div>
             <h4 class="admin-item-title">${review.tool}</h4>
             <p class="admin-item-desc">${review.desc}</p>
@@ -197,17 +200,17 @@ function renderReviews() {
 function initForms() {
     // Shared reset logic
     const setupCancel = (type) => {
-        document.getElementById(`${type}-cancel`).addEventListener('click', () => {
-            resetForm(type);
-        });
+        const btn = document.getElementById(`${type}-cancel`);
+        if (btn) btn.addEventListener('click', () => resetForm(type));
     };
 
-    if (document.getElementById('course-cancel')) setupCancel('course');
-    if (document.getElementById('article-cancel')) setupCancel('article');
-    if (document.getElementById('review-cancel')) setupCancel('review');
+    setupCancel('course');
+    setupCancel('article');
+    setupCancel('review');
 
     // Course Form
-    document.getElementById('course-form').addEventListener('submit', async (e) => {
+    const courseForm = document.getElementById('course-form');
+    if (courseForm) courseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('course-submit');
         submitBtn.disabled = true;
@@ -247,7 +250,8 @@ function initForms() {
     });
 
     // Article Form
-    document.getElementById('article-form').addEventListener('submit', async (e) => {
+    const articleForm = document.getElementById('article-form');
+    if (articleForm) articleForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('article-submit');
         submitBtn.disabled = true;
@@ -274,7 +278,8 @@ function initForms() {
     });
 
     // Review Form
-    document.getElementById('review-form').addEventListener('submit', async (e) => {
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) reviewForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('review-submit');
         submitBtn.disabled = true;
@@ -346,7 +351,7 @@ function initLessonForm() {
             showToast('Error saving lesson', 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Add Lesson';
+            submitBtn.textContent = 'Save Lesson';
         }
     });
 }
@@ -437,8 +442,8 @@ function renderLessons() {
                 <span class="lesson-meta">Video ID: ${lesson.video_id}</span>
             </div>
             <div class="lesson-actions">
-                <button class="btn-lesson-edit" onclick="editLesson('${lesson.id}')">Edit</button>
-                <button class="btn-lesson-delete" onclick="deleteLesson('${lesson.id}')">Delete</button>
+                <button class="btn-lesson-sm btn-edit" onclick="editLesson('${lesson.id}')">Edit</button>
+                <button class="btn-lesson-sm btn-delete" onclick="deleteLesson('${lesson.id}')">Delete</button>
             </div>
         </div>
     `).join('');
@@ -474,8 +479,65 @@ window.deleteLesson = async function (id) {
 window.resetLessonForm = function () {
     document.getElementById('lesson-form').reset();
     document.getElementById('lesson-id').value = '';
-    document.getElementById('lesson-submit').textContent = 'Add Lesson';
+    document.getElementById('lesson-submit').textContent = 'Save Lesson';
     document.getElementById('lesson-cancel-edit').style.display = 'none';
+};
+
+// --- BULK IMPORT & SEEDING ---
+
+window.handleBulkImport = async function () {
+    const input = document.getElementById('bulk-lessons-input').value;
+    const courseId = document.getElementById('lesson-course-id').value;
+
+    if (!input.trim()) {
+        showToast('Please enter some lessons first', 'error');
+        return;
+    }
+
+    const lines = input.split('\n').filter(l => l.trim().includes('|'));
+    if (lines.length === 0) {
+        showToast('Invalid format. Use: Title | URL', 'error');
+        return;
+    }
+
+    showToast(`Importing ${lines.length} lessons...`, 'info');
+
+    const lessonsToInsert = lines.map((line, index) => {
+        const [title, url] = line.split('|').map(s => s.trim());
+        const videoId = extractYouTubeId(url);
+        if (!videoId) return null;
+        return {
+            course_id: courseId,
+            title,
+            video_id: videoId,
+            order_index: adminData.currentLessons.length + index
+        };
+    }).filter(l => l !== null);
+
+    try {
+        const { error } = await supabaseClient.from(TABLE_NAMES.lessons).insert(lessonsToInsert);
+        if (error) throw error;
+        showToast(`Successfully imported ${lessonsToInsert.length} lessons`, 'success');
+        document.getElementById('bulk-lessons-input').value = '';
+        await fetchLessons(courseId);
+    } catch (error) {
+        console.error(error);
+        showToast('Error during bulk import', 'error');
+    }
+};
+
+window.seedCommonLessons = function () {
+    const seeds = [
+        "Lesson 1: Introduction to AI | https://www.youtube.com/watch?v=ad79nYk2kEg",
+        "Lesson 2: What is Prompt Engineering? | https://www.youtube.com/watch?v=RPmshfF9f30",
+        "Lesson 3: Advanced ChatGPT Techniques | https://www.youtube.com/watch?v=0e3G69vsczQ",
+        "Lesson 4: How Large Language Models Work | https://www.youtube.com/watch?v=5sLYAQS9sWQ",
+        "Lesson 5: AI Ethics and Responsibilities | https://www.youtube.com/watch?v=geSAsrX9f_s",
+        "Lesson 6: Building AI Agents with Python | https://www.youtube.com/watch?v=Zp_Wun-R3y4",
+        "Lesson 7: The Future of Generative AI | https://www.youtube.com/watch?v=Xv9L6qj7m6o"
+    ];
+    document.getElementById('bulk-lessons-input').value = seeds.join('\n');
+    showToast('AI Lessons seeded. Click "Import" to save them.', 'info');
 };
 
 // --- EDITING LOGIC ---
@@ -496,7 +558,8 @@ window.editCourse = function (id) {
     if (cancelBtn) cancelBtn.style.display = 'block';
 
     // Switch to tab
-    document.querySelector('[data-tab="courses-tab"]').click();
+    const tabBtn = document.querySelector('[data-tab="courses-tab"]');
+    if (tabBtn) tabBtn.click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -514,7 +577,8 @@ window.editArticle = function (id) {
     const cancelBtn = document.getElementById('article-cancel');
     if (cancelBtn) cancelBtn.style.display = 'block';
 
-    document.querySelector('[data-tab="articles-tab"]').click();
+    const tabBtn = document.querySelector('[data-tab="articles-tab"]');
+    if (tabBtn) tabBtn.click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -533,14 +597,18 @@ window.editReview = function (id) {
     const cancelBtn = document.getElementById('review-cancel');
     if (cancelBtn) cancelBtn.style.display = 'block';
 
-    document.querySelector('[data-tab="reviews-tab"]').click();
+    const tabBtn = document.querySelector('[data-tab="reviews-tab"]');
+    if (tabBtn) tabBtn.click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 function resetForm(type) {
-    document.getElementById(`${type}-form`).reset();
-    document.getElementById(`${type}-id`).value = '';
-    document.getElementById(`${type}-submit`).textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    const form = document.getElementById(`${type}-form`);
+    if (form) form.reset();
+    const idField = document.getElementById(`${type}-id`);
+    if (idField) idField.value = '';
+    const submitBtn = document.getElementById(`${type}-submit`);
+    if (submitBtn) submitBtn.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
     const cancelBtn = document.getElementById(`${type}-cancel`);
     if (cancelBtn) cancelBtn.style.display = 'none';
 }
@@ -548,9 +616,21 @@ function resetForm(type) {
 // --- UTILS ---
 
 function extractYouTubeId(url) {
+    if (!url) return false;
+    // Enhanced regex for multiple YT formats
     const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     const match = url.match(regExp);
-    return (match && match[7].length === 11) ? match[7] : false;
+    
+    if (match && match[7].length === 11) {
+        return match[7];
+    }
+    
+    // Fallback for short links / shorts
+    const shortsReg = /\/shorts\/([a-zA-Z0-9_-]{11})/;
+    const shortsMatch = url.match(shortsReg);
+    if (shortsMatch) return shortsMatch[1];
+    
+    return false;
 }
 
 function showToast(message, type = 'info') {
@@ -574,28 +654,13 @@ function showToast(message, type = 'info') {
         <span class="toast-text">${message}</span>
     `;
 
-    // Basic toast CSS injection if not present in main css
-    if (!document.getElementById('admin-toast-styles')) {
-        const style = document.createElement('style');
-        style.id = 'admin-toast-styles';
-        style.textContent = `
-            .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
-            .toast { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 8px; font-weight: 500; font-size: 0.95rem; animation: slideInRight 0.3s ease forwards; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: #fff; }
-            .toast-success { border-left: 4px solid #10b981; }
-            .toast-error { border-left: 4px solid #ef4444; }
-            .toast-info { border-left: 4px solid var(--accent); }
-            @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-            @keyframes fadeOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-            .toast.fade-out { animation: fadeOutRight 0.3s ease forwards; }
-        `;
-        document.head.appendChild(style);
-    }
-
     const toastContainer = document.getElementById('toast-container');
     toastContainer.appendChild(toast);
 
     setTimeout(() => {
-        toast.classList.add('fade-out');
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        toast.style.transition = 'all 0.3s ease';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 4000);
 }

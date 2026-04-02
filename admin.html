@@ -81,13 +81,19 @@
                     Reviews
                 </button>
             </nav>
-            <div class="admin-footer-nav">
+            <div class="admin-footer-nav" style="display: flex; flex-direction: column; gap: 8px;">
                 <a href="index.html" class="btn-back">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                     Back to Site
                 </a>
+                <button id="adminLogoutBtn" class="btn-back" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 12px; font-family: inherit;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    Logout
+                </button>
             </div>
         </aside>
 
@@ -156,34 +162,56 @@
 
                 <!-- Lessons Modal -->
                 <div id="lessons-modal" class="modal-overlay">
-                    <div class="admin-form-glass modal-window">
+                    <div class="modal-window">
                         <div class="modal-header">
-                            <h2 id="lessons-modal-title">Course Lessons</h2>
+                            <div>
+                                <h2 id="lessons-modal-title">Course Lessons</h2>
+                                <p class="form-hint" style="margin-top: 4px;">Update and manage individual lessons or bulk import.</p>
+                            </div>
                             <button class="btn-close" onclick="closeLessonsModal()">&times;</button>
                         </div>
-                        <form id="lesson-form" class="admin-form">
-                            <input type="hidden" id="lesson-course-id">
-                            <input type="hidden" id="lesson-id">
-                            <div class="form-group">
-                                <label for="lesson-title">Lesson Title <span class="required">*</span></label>
-                                <input type="text" id="lesson-title" placeholder="e.g. Lesson 1: Introduction" required>
+                        
+                        <div class="modal-body">
+                            <!-- Bulk Actions -->
+                            <div class="bulk-import-container">
+                                <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    Bulk Import
+                                </h3>
+                                <textarea id="bulk-lessons-input" class="bulk-textarea" 
+                                    placeholder="Format: Title | YouTube URL (one per line)&#10;Example: Lesson 1: Introduction | https://youtube.com/watch?v=..."></textarea>
+                                <div style="display: flex; gap: 12px;">
+                                    <button class="btn-icon btn-lessons-manage" onclick="handleBulkImport()">Import Lessons</button>
+                                    <button class="btn-icon btn-edit" onclick="seedCommonLessons()">Seed AI Lessons</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="lesson-yt-url">Video URL <span class="required">*</span></label>
-                                <input type="url" id="lesson-yt-url" placeholder="Paste video link here..."
-                                    required>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-primary" id="lesson-submit">Add Lesson</button>
-                                <button type="button" class="btn-secondary" id="lesson-cancel-edit"
-                                    style="display: none;" onclick="resetLessonForm()">Cancel Edit</button>
-                            </div>
-                        </form>
 
-                        <div class="lessons-list-container">
-                            <h3>Current Lessons</h3>
-                            <div id="lessons-list" class="admin-lessons-list">
-                                <!-- Lessons will be listed here -->
+                            <div style="border-top: 1px solid var(--admin-border); padding-top: 32px; margin-top: 16px;">
+                                <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Add Single Lesson</h3>
+                                <form id="lesson-form" class="admin-form">
+                                    <input type="hidden" id="lesson-course-id">
+                                    <input type="hidden" id="lesson-id">
+                                    <div class="form-group">
+                                        <label for="lesson-title">Lesson Title <span class="required">*</span></label>
+                                        <input type="text" id="lesson-title" placeholder="e.g. Lesson 1: Introduction" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lesson-yt-url">Video URL <span class="required">*</span></label>
+                                        <input type="url" id="lesson-yt-url" placeholder="Paste video link here..." required>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-icon btn-edit" id="lesson-submit">Save Lesson</button>
+                                        <button type="button" class="btn-icon btn-delete" id="lesson-cancel-edit"
+                                            style="display: none;" onclick="resetLessonForm()">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="lessons-list-container">
+                                <h3>Current Lessons</h3>
+                                <div id="lessons-list" class="admin-lessons-list">
+                                    <!-- Lessons will be listed here -->
+                                </div>
                             </div>
                         </div>
                     </div>
