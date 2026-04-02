@@ -7,107 +7,66 @@
     <title>theqnew — Admin Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="index.css?v=1.2">
-    <link rel="stylesheet" href="admin.css?v=1.2">
-    <style>
-        /* CRITICAL FALLBACK STYLES */
-        :root { --admin-accent: #00e5ff; --bg-primary: #070b14; }
-        body.admin-body { background: var(--bg-primary); color: #fff; font-family: 'Inter', sans-serif; margin: 0; }
-        .admin-layout { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 280px; background: rgba(13, 18, 32, 0.9); border-right: 1px solid rgba(255,255,255,0.1); padding: 32px 24px; position: fixed; height: 100vh; }
-        .admin-main { flex: 1; margin-left: 280px; padding: 56px; }
-        .admin-form-glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; margin-bottom: 48px; }
-        .btn-primary { background: var(--admin-accent); color: #000; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
 
-    <!-- Supabase CDN and Config -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
-        // High-security Auth Check
         (function() {
-            // Immediate check from storage if possible
             const check = () => {
                 if (!window.supabaseClient) return setTimeout(check, 50);
-                
                 window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                    const isAdmin = session?.user?.email === 'asadaweis05@gmail.com';
-                    if (!session || !isAdmin) {
+                    if (!session || session.user.email !== 'asadaweis05@gmail.com') {
                         window.location.href = 'index.html';
                     }
-                }).catch(() => {
-                    window.location.href = 'index.html';
-                });
+                }).catch(() => window.location.href = 'index.html');
             };
-            
             check();
-            
-            // Also monitor auth changes
-            if (window.supabaseClient) {
-                window.supabaseClient.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_OUT' || (session && session.user.email !== 'asadaweis05@gmail.com')) {
-                        window.location.href = 'index.html';
-                    }
-                });
-            }
         })();
     </script>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8203084339795682"
-        crossorigin="anonymous"></script>
 </head>
 
 <body class="admin-body">
+
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="admin-layout">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="admin-sidebar" id="adminSidebar">
             <div class="admin-brand">
                 <span>THE<span class="logo-accent">QNEW</span></span>
             </div>
             <nav class="admin-nav">
                 <button class="admin-tab active" data-tab="courses-tab">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     Courses
                 </button>
                 <button class="admin-tab" data-tab="articles-tab">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
                     Articles
                 </button>
                 <button class="admin-tab" data-tab="reviews-tab">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                        </polygon>
-                    </svg>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     Reviews
                 </button>
             </nav>
-            <div class="admin-footer-nav" style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="admin-footer-nav">
                 <a href="index.html" class="btn-back">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     Back to Site
                 </a>
-                <button id="adminLogoutBtn" class="btn-back" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 12px; font-family: inherit;">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                    </svg>
+                <button id="adminLogoutBtn" class="btn-back" style="background:none; border:none; cursor:pointer; width:100%; text-align:left; font-family:inherit;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
                     Logout
                 </button>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- ===== MAIN ===== -->
         <main class="admin-main">
             <header class="admin-header">
                 <h1 id="admin-page-title">Manage Courses</h1>
@@ -119,55 +78,48 @@
             </header>
 
             <div class="admin-content">
-                <!-- Courses Tab -->
+
+                <!-- ===== COURSES TAB ===== -->
                 <section id="courses-tab" class="admin-panel active">
                     <div class="admin-form-glass">
                         <h2>Add New Course</h2>
                         <form id="course-form" class="admin-form">
                             <input type="hidden" id="course-id">
+
                             <div class="form-group">
                                 <label for="course-yt-url">Video URL <span class="required">*</span></label>
-                                <input type="url" id="course-yt-url" placeholder="Paste main course video link here..."
-                                    required>
-                                <small class="form-hint">Main course video. Thumbnail and ID will be auto-extracted.</small>
+                                <input type="url" id="course-yt-url" placeholder="https://www.youtube.com/watch?v=..." required>
+                                <small class="form-hint">Main course video — thumbnail auto-extracted.</small>
                             </div>
+
                             <div class="form-row">
-                                <div class="form-group" style="flex: 2;">
+                                <div class="form-group">
                                     <label for="course-title">Course Title <span class="required">*</span></label>
-                                    <input type="text" id="course-title" placeholder="e.g. Advanced Prompt Engineering"
-                                        required>
+                                    <input type="text" id="course-title" placeholder="e.g. Advanced Prompt Engineering" required>
                                 </div>
-                                <div class="form-group" style="flex: 1;">
-                                    <label for="course-rating">Rating (1.0 - 5.0)</label>
-                                    <input type="number" step="0.1" min="1" max="5" id="course-rating" value="4.5"
-                                        required>
+                                <div class="form-group">
+                                    <label for="course-rating">Rating (1-5)</label>
+                                    <input type="number" step="0.1" min="1" max="5" id="course-rating" value="4.5" required>
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label for="course-desc">Description <span class="required">*</span></label>
-                                <textarea id="course-desc" placeholder="Short course description..." rows="3"
-                                    required></textarea>
+                                <textarea id="course-desc" placeholder="Short course description..." rows="3" required></textarea>
                             </div>
 
-                            <!-- Dynamic Lessons Section -->
-                            <div class="lessons-builder-container" style="margin-top: 32px; border-top: 1px solid var(--admin-border); padding-top: 24px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                    <h3 style="font-size: 1.1rem; margin: 0;">Course Lessons</h3>
-                                    <button type="button" id="add-lesson-btn" class="btn-icon btn-lessons-manage" style="max-width: 150px; height: 36px; font-size: 0.8rem;">
-                                        + Add Lesson
-                                    </button>
+                            <!-- Lesson Builder -->
+                            <div class="lessons-builder-container">
+                                <div class="lessons-builder-header">
+                                    <h3>Course Lessons</h3>
+                                    <button type="button" id="add-lesson-btn" class="btn-icon btn-lessons-manage">+ Add Lesson</button>
                                 </div>
-                                <div id="dynamic-lessons-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-                                    <!-- Lesson rows will appear here -->
-                                </div>
-                                <div id="no-lessons-hint" style="text-align: center; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; font-size: 0.85rem; color: var(--text-muted);">
-                                    No individual lessons added yet. Click "+ Add Lesson" to build your curriculum.
-                                </div>
+                                <div id="dynamic-lessons-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;"></div>
+                                <div id="no-lessons-hint">No lessons added yet. Click "+ Add Lesson" to build your curriculum.</div>
                             </div>
 
-                            <div class="form-actions" style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--admin-border);">
-                                <button type="button" class="btn-secondary" id="course-cancel"
-                                    style="display: none;">Cancel Edit</button>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="course-cancel" style="display:none;">Cancel Edit</button>
                                 <button type="submit" class="btn-primary" id="course-submit">Save Course & Lessons</button>
                             </div>
                         </form>
@@ -175,40 +127,29 @@
 
                     <div class="admin-list-container">
                         <h3>Existing Courses</h3>
-                        <div class="admin-grid" id="courses-list">
-                            <!-- Items populated by JS -->
-                        </div>
+                        <div class="admin-grid" id="courses-list"></div>
                     </div>
                 </section>
 
-                <!-- Lessons Modal -->
+                <!-- ===== LESSONS MODAL ===== -->
                 <div id="lessons-modal" class="modal-overlay">
                     <div class="modal-window">
                         <div class="modal-header">
-                            <div>
-                                <h2 id="lessons-modal-title">Course Lessons</h2>
-                                <p class="form-hint" style="margin-top: 4px;">Update and manage individual lessons or bulk import.</p>
-                            </div>
-                            <button class="btn-close" onclick="closeLessonsModal()">&times;</button>
+                            <h2 id="lessons-modal-title">Course Lessons</h2>
+                            <button class="btn-close" onclick="closeLessonsModal()">✕</button>
                         </div>
-                        
                         <div class="modal-body">
-                            <!-- Bulk Actions -->
                             <div class="bulk-import-container">
-                                <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                                    Bulk Import
-                                </h3>
-                                <textarea id="bulk-lessons-input" class="bulk-textarea" 
-                                    placeholder="Format: Title | YouTube URL (one per line)&#10;Example: Lesson 1: Introduction | https://youtube.com/watch?v=..."></textarea>
-                                <div style="display: flex; gap: 12px;">
+                                <h3 style="font-size:0.9rem; font-weight:700; margin-bottom:10px;">Bulk Import</h3>
+                                <textarea id="bulk-lessons-input" class="bulk-textarea" placeholder="Format: Title | YouTube URL (one per line)"></textarea>
+                                <div style="display:flex; gap:8px;">
                                     <button class="btn-icon btn-lessons-manage" onclick="handleBulkImport()">Import Lessons</button>
                                     <button class="btn-icon btn-edit" onclick="seedCommonLessons()">Seed AI Lessons</button>
                                 </div>
                             </div>
 
-                            <div style="border-top: 1px solid var(--admin-border); padding-top: 32px; margin-top: 16px;">
-                                <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Add Single Lesson</h3>
+                            <div style="border-top:1px solid var(--border); padding-top:24px; margin-top:12px;">
+                                <h3 style="font-size:0.9rem; font-weight:700; margin-bottom:16px;">Add Single Lesson</h3>
                                 <form id="lesson-form" class="admin-form">
                                     <input type="hidden" id="lesson-course-id">
                                     <input type="hidden" id="lesson-id">
@@ -218,27 +159,24 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="lesson-yt-url">Video URL <span class="required">*</span></label>
-                                        <input type="url" id="lesson-yt-url" placeholder="Paste video link here..." required>
+                                        <input type="url" id="lesson-yt-url" placeholder="https://www.youtube.com/watch?v=..." required>
                                     </div>
                                     <div class="form-actions">
                                         <button type="submit" class="btn-icon btn-edit" id="lesson-submit">Save Lesson</button>
-                                        <button type="button" class="btn-icon btn-delete" id="lesson-cancel-edit"
-                                            style="display: none;" onclick="resetLessonForm()">Cancel</button>
+                                        <button type="button" class="btn-icon btn-delete" id="lesson-cancel-edit" style="display:none;" onclick="resetLessonForm()">Cancel</button>
                                     </div>
                                 </form>
                             </div>
 
                             <div class="lessons-list-container">
                                 <h3>Current Lessons</h3>
-                                <div id="lessons-list" class="admin-lessons-list">
-                                    <!-- Lessons will be listed here -->
-                                </div>
+                                <div id="lessons-list" class="admin-lessons-list"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Articles Tab -->
+                <!-- ===== ARTICLES TAB ===== -->
                 <section id="articles-tab" class="admin-panel">
                     <div class="admin-form-glass">
                         <h2>Add New Article</h2>
@@ -251,36 +189,30 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="article-tag">Category / Tag <span class="required">*</span></label>
-                                    <input type="text" id="article-tag" placeholder="e.g. Setup, AI Ethics" required>
+                                    <input type="text" id="article-tag" placeholder="e.g. AI Ethics" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="article-image">Image URL</label>
-                                    <input type="url" id="article-image" placeholder="https://example.com/image.jpg"
-                                        required>
+                                    <input type="url" id="article-image" placeholder="https://example.com/image.jpg" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="article-summary">Summary <span class="required">*</span></label>
-                                <textarea id="article-summary" placeholder="Short article summary..." rows="3"
-                                    required></textarea>
+                                <textarea id="article-summary" placeholder="Short article summary..." rows="3" required></textarea>
                             </div>
                             <div class="form-actions">
-                                <button type="button" class="btn-secondary" id="article-cancel"
-                                    style="display: none;">Cancel Edit</button>
+                                <button type="button" class="btn-secondary" id="article-cancel" style="display:none;">Cancel Edit</button>
                                 <button type="submit" class="btn-primary" id="article-submit">Add Article</button>
                             </div>
                         </form>
                     </div>
-
                     <div class="admin-list-container">
                         <h3>Existing Articles</h3>
-                        <div class="admin-grid" id="articles-list">
-                            <!-- Items populated by JS -->
-                        </div>
+                        <div class="admin-grid" id="articles-list"></div>
                     </div>
                 </section>
 
-                <!-- Reviews Tab -->
+                <!-- ===== REVIEWS TAB ===== -->
                 <section id="reviews-tab" class="admin-panel">
                     <div class="admin-form-glass">
                         <h2>Add New Tool Review</h2>
@@ -292,14 +224,13 @@
                                     <input type="text" id="review-tool" placeholder="e.g. Claude 3" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="review-rating">Rating (1.0 - 5.0)</label>
-                                    <input type="number" step="0.1" min="1" max="5" id="review-rating" value="4.8"
-                                        required>
+                                    <label for="review-rating">Rating (1-5)</label>
+                                    <input type="number" step="0.1" min="1" max="5" id="review-rating" value="4.8" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="review-color">Icon Background Color (HEX)</label>
+                                    <label for="review-color">Icon Color</label>
                                     <input type="color" id="review-color" value="#00e5ff">
                                 </div>
                                 <div class="form-group">
@@ -309,32 +240,39 @@
                             </div>
                             <div class="form-group">
                                 <label for="review-desc">Description <span class="required">*</span></label>
-                                <textarea id="review-desc" placeholder="Short description of the tool..." rows="2"
-                                    required></textarea>
+                                <textarea id="review-desc" placeholder="Short description of the tool..." rows="2" required></textarea>
                             </div>
                             <div class="form-actions">
-                                <button type="button" class="btn-secondary" id="review-cancel"
-                                    style="display: none;">Cancel Edit</button>
+                                <button type="button" class="btn-secondary" id="review-cancel" style="display:none;">Cancel Edit</button>
                                 <button type="submit" class="btn-primary" id="review-submit">Add Review</button>
                             </div>
                         </form>
                     </div>
-
                     <div class="admin-list-container">
                         <h3>Existing Reviews</h3>
-                        <div class="admin-grid" id="reviews-list">
-                            <!-- Items populated by JS -->
-                        </div>
+                        <div class="admin-grid" id="reviews-list"></div>
                     </div>
                 </section>
+
             </div>
         </main>
     </div>
 
-    <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="admin.js?v=1.3"></script>
-</body>
+    <script src="admin.js?v=2.0"></script>
 
+    <script>
+        // Mobile sidebar logic
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (toggle && sidebar && overlay) {
+            const openSidebar = () => { sidebar.classList.add('open'); overlay.classList.add('show'); };
+            const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+            toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+            overlay.addEventListener('click', closeSidebar);
+        }
+    </script>
+</body>
 </html>

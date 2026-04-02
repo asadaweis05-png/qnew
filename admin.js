@@ -174,15 +174,17 @@ function renderCourses() {
     list.innerHTML = courses.map(course => `
         <div class="admin-item-card">
             <img src="${course.thumbnail_url || course.thumbnailUrl}" alt="${course.title}" class="admin-item-img">
-            <h4 class="admin-item-title">${course.title}</h4>
-            <p class="admin-item-desc">${course.desc}</p>
-            <div class="admin-item-meta">
-                <span>⭐ ${course.rating}</span>
-                <span>${course.lessons}</span>
-            </div>
-            <div class="admin-item-actions">
-                <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')">Manage Course & Lessons</button>
-                <button class="btn-icon btn-delete" onclick="deleteItem('${TABLE_NAMES.courses}', 'courses', '${course.id}')">Delete</button>
+            <div class="admin-item-body">
+                <h4 class="admin-item-title">${course.title}</h4>
+                <p class="admin-item-desc">${course.desc}</p>
+                <div class="admin-item-meta">
+                    <span>⭐ ${course.rating}</span>
+                    <span>${course.lessons}</span>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')">Edit</button>
+                    <button class="btn-icon btn-delete" onclick="deleteItem('${TABLE_NAMES.courses}', 'courses', '${course.id}')">Delete</button>
+                </div>
             </div>
         </div>
     `).join('');
