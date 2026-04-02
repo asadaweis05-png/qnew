@@ -16,6 +16,57 @@ const TABLE_NAMES = {
     lessons: 'course_lessons'
 };
 
+// --- CORE FUNCTIONS (Global) ---
+
+window.addLessonRow = function (data = { title: '', video_id: '' }) {
+    console.log('Adding lesson row...', data);
+    const list = document.getElementById('dynamic-lessons-list');
+    const hint = document.getElementById('no-lessons-hint');
+    if (!list) {
+        console.error('Container "dynamic-lessons-list" not found!');
+        return;
+    }
+    if (hint) hint.style.display = 'none';
+
+    const urlValue = data.video_id ? `https://www.youtube.com/watch?v=${data.video_id}` : '';
+    
+    const row = document.createElement('div');
+    row.className = 'lesson-row';
+    row.style.cssText = `
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        background: rgba(255,255,255,0.02);
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--admin-border);
+        animation: fadeIn 0.3s ease;
+        position: relative;
+    `;
+    
+    row.innerHTML = `
+        <input type="text" placeholder="Lesson Title" class="lesson-row-title" value="${data.title || ''}" required style="padding: 10px; font-size: 0.9rem;">
+        <input type="url" placeholder="YouTube URL" class="lesson-row-url" value="${urlValue}" required style="padding: 10px; font-size: 0.9rem;">
+        <button type="button" class="btn-icon btn-delete" onclick="removeLessonRow(this)" style="width: 40px; height: 40px;">
+            &times;
+        </button>
+    `;
+    
+    list.appendChild(row);
+};
+
+window.removeLessonRow = function (btn) {
+    const row = btn.parentElement;
+    row.style.opacity = '0';
+    row.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+        row.remove();
+        const list = document.getElementById('dynamic-lessons-list');
+        const hint = document.getElementById('no-lessons-hint');
+        if (list && list.children.length === 0 && hint) hint.style.display = 'block';
+    }, 200);
+};
+
 // We will hold local copies of data for fast rendering
 let adminData = {
     courses: [],
@@ -206,6 +257,13 @@ function initForms() {
     setupCancel('article');
     setupCancel('review');
 
+    // Add Lesson Button Listener
+    const addLessonBtn = document.getElementById('add-lesson-btn');
+    if (addLessonBtn) {
+        console.log('Attaching listener to Add Lesson button');
+        addLessonBtn.addEventListener('click', () => window.addLessonRow());
+    }
+
     const courseForm = document.getElementById('course-form');
     if (courseForm) courseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -351,52 +409,6 @@ function initForms() {
         }
     });
 }
-
-// --- LESSON BUILDER LOGIC ---
-
-window.addLessonRow = function (data = { title: '', video_id: '' }) {
-    const list = document.getElementById('dynamic-lessons-list');
-    const hint = document.getElementById('no-lessons-hint');
-    if (hint) hint.style.display = 'none';
-
-    const urlValue = data.video_id ? `https://www.youtube.com/watch?v=${data.video_id}` : '';
-    
-    const row = document.createElement('div');
-    row.className = 'lesson-row';
-    row.style.cssText = `
-        display: grid;
-        grid-template-columns: 1fr 1fr auto;
-        gap: 12px;
-        background: rgba(255,255,255,0.02);
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid var(--admin-border);
-        animation: fadeIn 0.3s ease;
-        position: relative;
-    `;
-    
-    row.innerHTML = `
-        <input type="text" placeholder="Lesson Title" class="lesson-row-title" value="${data.title}" required style="padding: 10px; font-size: 0.9rem;">
-        <input type="url" placeholder="YouTube URL" class="lesson-row-url" value="${urlValue}" required style="padding: 10px; font-size: 0.9rem;">
-        <button type="button" class="btn-icon btn-delete" onclick="removeLessonRow(this)" style="width: 40px; height: 40px;">
-            &times;
-        </button>
-    `;
-    
-    list.appendChild(row);
-};
-
-window.removeLessonRow = function (btn) {
-    const row = btn.parentElement;
-    row.style.opacity = '0';
-    row.style.transform = 'scale(0.9)';
-    setTimeout(() => {
-        row.remove();
-        const list = document.getElementById('dynamic-lessons-list');
-        const hint = document.getElementById('no-lessons-hint');
-        if (list.children.length === 0 && hint) hint.style.display = 'block';
-    }, 200);
-};
 
 // Side effect: Automatically Sync Course Lessons Count
 async function updateCourseLessonsCount(courseId) {
