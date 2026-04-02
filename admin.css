@@ -5,6 +5,9 @@
     --admin-border: rgba(255, 255, 255, 0.08);
     --admin-accent: #00e5ff;
     --admin-accent-glow: rgba(0, 229, 255, 0.3);
+    --admin-success: #10b981;
+    --admin-error: #ef4444;
+    --admin-warning: #f59e0b;
 }
 
 .admin-body {
@@ -36,6 +39,17 @@
     position: fixed;
     height: 100vh;
     z-index: 100;
+}
+
+.admin-sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, var(--admin-accent), transparent);
+    opacity: 0.3;
 }
 
 .admin-brand {
@@ -164,6 +178,13 @@
     font-weight: 700;
     border: 1px solid rgba(37, 99, 235, 0.15);
     backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.stat-badge:hover {
+    background: rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.3);
 }
 
 /* Panels */
@@ -193,6 +214,11 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.admin-form-glass:hover {
+    border-color: rgba(0, 229, 255, 0.2);
 }
 
 .admin-form-glass::before {
@@ -307,6 +333,18 @@
     overflow: hidden;
 }
 
+.admin-empty {
+    grid-column: 1 / -1;
+    padding: 60px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--admin-border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .admin-item-card:hover {
     transform: translateY(-8px);
     background: rgba(17, 24, 39, 0.6);
@@ -370,7 +408,11 @@
     font-weight: 700;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
 }
 
 .btn-edit {
@@ -475,7 +517,25 @@
 .btn-close:hover {
     background: #ef4444;
     color: #fff;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Secondary Button Upgrade */
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--admin-border);
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
 }
 
 /* Lessons UI */
@@ -556,6 +616,22 @@
     gap: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     animation: toastSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 300px;
+}
+
+.toast-success { border-left: 4px solid var(--admin-success); }
+.toast-error { border-left: 4px solid var(--admin-error); }
+.toast-info { border-left: 4px solid var(--admin-accent); }
+.toast-warning { border-left: 4px solid var(--admin-warning); }
+
+.toast-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.toast-text {
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
 @keyframes toastSlide {
@@ -583,7 +659,15 @@
     font-family: monospace;
     font-size: 0.85rem;
     margin-bottom: 12px;
-    resize: none;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.bulk-textarea:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
 }
 
 /* Responsive */

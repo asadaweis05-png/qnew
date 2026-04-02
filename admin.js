@@ -346,6 +346,7 @@ function initLessonForm() {
             }
             resetLessonForm();
             await fetchLessons(courseId);
+            await updateCourseLessonsCount(courseId);
         } catch (error) {
             console.error(error);
             showToast('Error saving lesson', 'error');
@@ -354,6 +355,32 @@ function initLessonForm() {
             submitBtn.textContent = 'Save Lesson';
         }
     });
+}
+
+// Side effect: Automatically Sync Course Lessons Count
+async function updateCourseLessonsCount(courseId) {
+    try {
+        const { count, error } = await supabaseClient
+            .from(TABLE_NAMES.lessons)
+            .select('*', { count: 'exact', head: true })
+            .eq('course_id', courseId);
+
+        if (error) throw error;
+
+        const countText = `${count} Lessons`;
+        const { error: updateError } = await supabaseClient
+            .from(TABLE_NAMES.courses)
+            .update({ lessons: countText })
+            .eq('id', courseId);
+
+        if (updateError) throw updateError;
+        
+        // Refresh local course data
+        await fetchData(TABLE_NAMES.courses, 'courses');
+        renderCourses();
+    } catch (e) {
+        console.error('Error updating course count:', e);
+    }
 }
 
 async function saveItem(tableName, stateKey, data, isEditId) {
@@ -470,6 +497,7 @@ window.deleteLesson = async function (id) {
         if (error) throw error;
         showToast('Lesson deleted', 'info');
         await fetchLessons(courseId);
+        await updateCourseLessonsCount(courseId);
     } catch (error) {
         console.error(error);
         showToast('Error deleting lesson', 'error');
@@ -517,9 +545,11 @@ window.handleBulkImport = async function () {
     try {
         const { error } = await supabaseClient.from(TABLE_NAMES.lessons).insert(lessonsToInsert);
         if (error) throw error;
+        
         showToast(`Successfully imported ${lessonsToInsert.length} lessons`, 'success');
         document.getElementById('bulk-lessons-input').value = '';
         await fetchLessons(courseId);
+        await updateCourseLessonsCount(courseId);
     } catch (error) {
         console.error(error);
         showToast('Error during bulk import', 'error');
