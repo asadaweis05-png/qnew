@@ -130,8 +130,7 @@ function renderCourses() {
                 <span>${course.lessons}</span>
             </div>
             <div class="admin-item-actions">
-                <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')">Edit</button>
-                <button class="btn-icon btn-lessons-manage" onclick="openLessonsModal('${course.id}')">Lessons</button>
+                <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')">Manage Course & Lessons</button>
                 <button class="btn-icon btn-delete" onclick="deleteItem('${TABLE_NAMES.courses}', 'courses', '${course.id}')">Delete</button>
             </div>
         </div>
@@ -270,6 +269,7 @@ function initForms() {
             } else {
                 const { data, error } = await supabaseClient.from(TABLE_NAMES.courses).insert([courseData]).select();
                 if (error) throw error;
+                if (!data || data.length === 0) throw new Error('No data returned from course insertion');
                 courseId = data[0].id;
             }
 
@@ -363,15 +363,16 @@ window.addLessonRow = function (data = { title: '', video_id: '' }) {
     
     const row = document.createElement('div');
     row.className = 'lesson-row';
-    row.style = `
+    row.style.cssText = `
         display: grid;
         grid-template-columns: 1fr 1fr auto;
         gap: 12px;
         background: rgba(255,255,255,0.02);
         padding: 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid var(--admin-border);
         animation: fadeIn 0.3s ease;
+        position: relative;
     `;
     
     row.innerHTML = `
