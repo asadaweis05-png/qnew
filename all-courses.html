@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THEQNEW — All Courses</title>
+    <meta name="description" content="Browse all AI courses available on THEQNEW. Learn prompt engineering, AI development, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8203084339795682" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --bg: #070b14;
+            --bg-card: #0d1220;
+            --bg-card-hover: #111827;
+            --accent: #00e5ff;
+            --accent-glow: rgba(0, 229, 255, 0.15);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-accent: rgba(0, 229, 255, 0.3);
+            --nav-height: 72px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: rgba(7, 11, 20, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        .nav-inner {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .nav-logo .logo-accent { color: var(--accent); }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); }
+        .nav-links a.active { color: var(--accent); }
+        .btn-back-home {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-accent);
+            color: var(--accent);
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-back-home:hover { background: var(--accent); color: #000; }
+
+        /* ===== PAGE BODY ===== */
+        .page-wrapper { padding-top: calc(var(--nav-height) + 60px); padding-bottom: 100px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+
+        /* ===== HERO HEADER ===== */
+        .page-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .page-hero-badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            border: 1px solid var(--border-accent);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+        .page-hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .page-hero h1 span { color: var(--accent); }
+        .page-hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.7;
+        }
+
+        /* ===== SEARCH & FILTER ===== */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px 14px 48px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: var(--border-accent); }
+        .search-box input::placeholder { color: var(--text-muted); }
+        .search-icon {
+            position: absolute;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .sort-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+        }
+        .course-count {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .course-count span { color: var(--accent); font-weight: 700; }
+
+        /* ===== COURSES GRID ===== */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .course-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            animation: fadeUp 0.4s ease both;
+        }
+        .course-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-accent);
+            box-shadow: 0 20px 60px rgba(0, 229, 255, 0.08);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .course-thumb-wrap {
+            position: relative;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: #111827;
+        }
+        .course-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .course-card:hover .course-thumb-wrap img { transform: scale(1.05); }
+        .thumb-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(7,11,20,0.8));
+        }
+        .play-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .course-card:hover .play-icon { opacity: 1; }
+        .play-icon svg {
+            width: 56px; height: 56px;
+            background: var(--accent);
+            border-radius: 50%;
+            padding: 14px;
+            box-shadow: 0 0 30px rgba(0,229,255,0.5);
+        }
+        .course-badge {
+            position: absolute;
+            top: 14px; left: 14px;
+            background: var(--accent);
+            color: #000;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .course-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+        .course-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .course-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .course-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .stars-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stars { display: flex; gap: 2px; }
+        .star { color: #f59e0b; font-size: 0.85rem; }
+        .star.empty { color: #374151; }
+        .rating-num { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .lessons-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .lessons-count svg { color: var(--accent); }
+
+        /* ===== EMPTY & LOADING STATES ===== */
+        .state-card {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        .state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .state-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+        .state-desc { font-size: 0.9rem; color: var(--text-muted); }
+
+        .loader-dot {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 0.8s ease infinite;
+            margin: 0 3px;
+        }
+        .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+        .loader-dot:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.7); opacity: 0.4; }
+            50% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== COURSE PLAYER MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+        }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+        }
+        .player-modal {
+            position: relative;
+            z-index: 1;
+            background: #0d1220;
+            border: 1px solid var(--border-accent);
+            border-radius: 24px;
+            width: 95vw;
+            max-width: 1100px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .player-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .btn-close-modal {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-close-modal:hover { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .player-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .video-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            padding-top: 56.25%;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .video-info { padding: 20px 24px; border-top: 1px solid var(--border); }
+        .video-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .video-info p { font-size: 0.85rem; color: var(--text-muted); }
+
+        .playlist-sidebar {
+            width: 300px;
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .playlist-header {
+            padding: 16px 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .playlist-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+        .playlist-list::-webkit-scrollbar { width: 4px; }
+        .playlist-list::-webkit-scrollbar-track { background: transparent; }
+        .playlist-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .playlist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        .playlist-item:hover { background: rgba(255,255,255,0.03); }
+        .playlist-item.active { background: var(--accent-glow); }
+        .playlist-num {
+            min-width: 24px; height: 24px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .playlist-item.active .playlist-num { background: var(--accent); color: #000; }
+        .playlist-title {
+            font-size: 0.82rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+        .playlist-item.active .playlist-title { color: var(--text); font-weight: 600; }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            animation: slideInToast 0.3s ease;
+        }
+        .toast.toast-success { border-color: rgba(16,185,129,0.4); }
+        .toast.toast-error { border-color: rgba(239,68,68,0.4); }
+        @keyframes slideInToast { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ===== Auth Login Prompt ===== */
+        .login-wall {
+            text-align: center;
+            padding: 60px 30px;
+        }
+        .login-wall svg { margin-bottom: 20px; color: var(--accent); }
+        .login-wall h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+        .login-wall p { color: var(--text-muted); margin-bottom: 24px; }
+        .btn-login-action {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
+        }
+        .btn-login-action:hover { opacity: 0.85; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .container { padding: 0 20px; }
+            .courses-grid { grid-template-columns: 1fr; }
+            .playlist-sidebar { display: none; }
+            .player-modal { border-radius: 16px; }
+        }
+        @media (max-width: 600px) {
+            .filter-bar { flex-direction: column; }
+            .search-box { min-width: auto; width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">THE<span class="logo-accent">QNEW</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#marketplace">Marketplace</a>
+                <a href="all-courses.html" class="active">All Courses</a>
+                <a href="courses.html">My Learning</a>
+                <a href="about.html">About</a>
+            </div>
+            <a href="index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-wrapper">
+        <div class="container">
+
+            <!-- HERO HEADER -->
+            <div class="page-hero">
+                <div class="page-hero-badge">✦ Learn with THEQNEW</div>
+                <h1>Browse <span>All Courses</span></h1>
+                <p>Explore our complete course library — curated AI & tech courses designed to take you from zero to production.</p>
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search courses...">
+                </div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="newest">Newest First</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="az">A → Z</option>
+                </select>
+                <div class="course-count">Showing <span id="countDisplay">0</span> courses</div>
+            </div>
+
+            <!-- COURSES GRID -->
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Loading state -->
+                <div class="state-card" id="loadingState">
+                    <div style="margin-bottom: 12px;">
+                        <span class="loader-dot"></span>
+                        <span class="loader-dot"></span>
+                        <span class="loader-dot"></span>
+                    </div>
+                    <div class="state-title">Loading courses...</div>
+                    <div class="state-desc">Fetching the latest courses for you.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- COURSE PLAYER MODAL -->
+    <div class="modal" id="playerModal">
+        <div class="modal-backdrop" onclick="closePlayer()"></div>
+        <div class="player-modal">
+            <div class="player-header">
+                <h2 id="playerCourseTitle">Course Title</h2>
+                <button class="btn-close-modal" onclick="closePlayer()">✕</button>
+            </div>
+            <div class="player-body">
+                <div class="video-wrap">
+                    <div class="video-container">
+                        <iframe id="videoPlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 id="currentLessonTitle">Lesson Title</h3>
+                        <p id="playerCourseSub">Course</p>
+                    </div>
+                </div>
+                <div class="playlist-sidebar" id="playlistSidebar">
+                    <div class="playlist-header">Course Lessons</div>
+                    <div class="playlist-list" id="playlistList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH PROMPT MODAL -->
+    <div class="modal" id="authPromptModal">
+        <div class="modal-backdrop" onclick="closeAuthPrompt()"></div>
+        <div class="player-modal" style="max-width: 480px; border-radius: 20px;">
+            <div class="login-wall">
+                <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <h3>Login Required</h3>
+                <p>Please login or create a free account to watch this course.</p>
+                <button class="btn-login-action" onclick="window.location.href='index.html'">Login / Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== DATA =====
+        let allCourses = [];
+        let filteredCourses = [];
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCourses();
+            setupFilters();
+        });
+
+        async function loadCourses() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('courses')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                allCourses = data || [];
+                filteredCourses = [...allCourses];
+                renderCourses(filteredCourses);
+            } catch (err) {
+                console.error(err);
+                showState('error');
+            }
+        }
+
+        function renderCourses(courses) {
+            const grid = document.getElementById('coursesGrid');
+            const countEl = document.getElementById('countDisplay');
+            countEl.textContent = courses.length;
+
+            if (courses.length === 0) {
+                grid.innerHTML = `
+                    <div class="state-card">
+                        <div class="state-icon">📚</div>
+                        <div class="state-title">No courses found</div>
+                        <div class="state-desc">Try a different search term, or check back soon — new courses are added regularly.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = courses.map((course, i) => `
+                <div class="course-card" style="animation-delay: ${i * 60}ms" onclick="openCourse('${course.id}')">
+                    <div class="course-thumb-wrap">
+                        <img src="${course.thumbnail_url || course.thumbnailUrl || `https://img.youtube.com/vi/${course.video_id}/hqdefault.jpg`}" alt="${escHtml(course.title)}" loading="lazy">
+                        <div class="thumb-overlay"></div>
+                        <div class="play-icon">
+                            <svg viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <span class="course-badge">Course</span>
+                    </div>
+                    <div class="course-body">
+                        <h3 class="course-title">${escHtml(course.title)}</h3>
+                        <p class="course-desc">${escHtml(course.desc || '')}</p>
+                        <div class="course-meta">
+                            <div class="stars-row">
+                                ${buildStars(course.rating)}
+                                <span class="rating-num">${course.rating}</span>
+                            </div>
+                            <div class="lessons-count">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+                                ${escHtml(course.lessons || '0 Lessons')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupFilters() {
+            const searchInput = document.getElementById('searchInput');
+            const sortSelect = document.getElementById('sortSelect');
+
+            searchInput.addEventListener('input', applyFilters);
+            sortSelect.addEventListener('change', applyFilters);
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sort  = document.getElementById('sortSelect').value;
+
+            let result = allCourses.filter(c =>
+                (c.title || '').toLowerCase().includes(query) ||
+                (c.desc || '').toLowerCase().includes(query)
+            );
+
+            if (sort === 'rating') result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            else if (sort === 'az') result.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+            filteredCourses = result;
+            renderCourses(filteredCourses);
+        }
+
+        // ===== COURSE PLAYER =====
+        async function openCourse(courseId) {
+            // Check login
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                document.getElementById('authPromptModal').classList.add('active');
+                return;
+            }
+
+            const course = allCourses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('playerCourseTitle').textContent = course.title;
+            document.getElementById('playerCourseSub').textContent = course.title;
+            document.getElementById('playerModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('playlistList').innerHTML = '<div style="padding:20px; color: var(--text-muted); font-size:0.85rem; text-align:center;">Loading lessons...</div>';
+
+            try {
+                const { data: lessons, error } = await supabaseClient
+                    .from('course_lessons')
+                    .select('*')
+                    .eq('course_id', courseId)
+                    .order('order_index', { ascending: true });
+
+                if (error) throw error;
+
+                if (!lessons || lessons.length === 0) {
+                    // Fallback: play main course video
+                    document.getElementById('playlistList').innerHTML = `
+                        <div class="playlist-item active" onclick="playLesson('${course.video_id}', 'Introduction', this)">
+                            <span class="playlist-num">1</span>
+                            <span class="playlist-title">Main Introduction</span>
+                        </div>
+                    `;
+                    playLesson(course.video_id, 'Introduction');
+                } else {
+                    document.getElementById('playlistList').innerHTML = lessons.map((l, i) => `
+                        <div class="playlist-item ${i === 0 ? 'active' : ''}" onclick="playLesson('${l.video_id}', '${escAttr(l.title)}', this)">
+                            <span class="playlist-num">${i + 1}</span>
+                            <span class="playlist-title">${escHtml(l.title)}</span>
+                        </div>
+                    `).join('');
+                    playLesson(lessons[0].video_id, lessons[0].title);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error loading lessons', 'error');
+            }
+        }
+
+        window.playLesson = function(videoId, title, el) {
+            document.getElementById('videoPlayer').src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+            document.getElementById('currentLessonTitle').textContent = title;
+
+            if (el) {
+                document.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+
+        window.closePlayer = function() {
+            document.getElementById('playerModal').classList.remove('active');
+            document.getElementById('videoPlayer').src = '';
+            document.body.style.overflow = '';
+        };
+
+        window.closeAuthPrompt = function() {
+            document.getElementById('authPromptModal').classList.remove('active');
+        };
+
+        // ===== UTILS =====
+        function buildStars(rating) {
+            const r = parseFloat(rating) || 0;
+            const full = Math.floor(r);
+            let html = '<div class="stars">';
+            for (let i = 0; i < 5; i++) {
+                html += `<span class="star${i >= full ? ' empty' : ''}">★</span>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        function escAttr(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function showState(type) {
+            const grid = document.getElementById('coursesGrid');
+            if (type === 'error') {
+                grid.innerHTML = `
+                    <div class="state-card">
+                        <div class="state-icon">⚠️</div>
+                        <div class="state-title">Something went wrong</div>
+                        <div class="state-desc">Could not load courses. Please refresh the page.</div>
+                    </div>
+                `;
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast toast-${type}`;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3500);
+        }
+
+        // ESC key to close modals
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closePlayer(); closeAuthPrompt(); }
+        });
+    </script>
+
+</body>
+</html>
